@@ -20,6 +20,7 @@ import { ProductSection } from "../components/landing/ProductSection"
 import { HeroCarousel } from "../components/landing/HeroCarousel"
 import { Navigation } from "../components/landing/Navigation"
 import { MapSection } from "../components/landing/MapSection"
+import { Footer } from "../components/landing/Footer"
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -229,84 +230,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div>
-              <h3 className="text-xl font-bold mb-4">O'Marché</h3>
-              <p className="text-gray-400">
-                Des produits frais et locaux, livrés chez vous en toute simplicité.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-4">Liens utiles</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
-                    À propos
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog" className="text-gray-400 hover:text-white transition-colors">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers" className="text-gray-400 hover:text-white transition-colors">
-                    Carrières
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-4">Légal</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
-                    CGV
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
-                    Confidentialité
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/cookies" className="text-gray-400 hover:text-white transition-colors">
-                    Cookies
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-4">Télécharger l'app</h3>
-              <div className="flex flex-col gap-4">
-                <Link href="#">
-                  <Image
-                    src="/images/app-store-white.png"
-                    alt="Télécharger sur l'App Store"
-                    width={200}
-                    height={60}
-                    className="h-[60px] w-auto"
-                  />
-                </Link>
-                <Link href="#">
-                  <Image
-                    src="/images/play-store-white.png"
-                    alt="Télécharger sur le Play Store"
-                    width={200}
-                    height={60}
-                    className="h-[60px] w-auto"
-                  />
-                </Link>
-              </div>
-            </div>
-          </div>
-          <div className="mt-12 pt-8 border-t border-gray-800 text-center">
-            <p className="text-gray-400">&copy; {new Date().getFullYear()} O'Marché. Tous droits réservés.</p>
-          </div>
-        </div>
-      </footer>
+    <Footer />
     </main>
   )
 }

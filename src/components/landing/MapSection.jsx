@@ -16,22 +16,34 @@ export function MapSection() {
       // Initialiser la carte une fois le script chargé
       window.ymaps.ready(() => {
         const map = new window.ymaps.Map('map', {
-          center: [5.2992, -3.9892], // Coordonnées d'Abidjan, Koumassi
-          zoom: 14,
+          center: [5.3011744, -3.9666682], // Coordonnées de Koumassi, Remblais
+          zoom: 15,
           controls: ['zoomControl', 'fullscreenControl']
+        }, {
+          suppressMapOpenBlock: true
         })
 
         // Ajouter un marqueur pour O'Marché
-        const placemark = new window.ymaps.Placemark([5.2992, -3.9892], {
-          balloonContent: 'O\'Marché - Votre marché en ligne',
+        const placemark = new window.ymaps.Placemark([5.3011744, -3.9666682], {
           balloonContentHeader: 'O\'Marché',
-          balloonContentBody: 'Remblais, Koumassi, Abidjan',
-          balloonContentFooter: 'Ouvert 7j/7'
+          balloonContentBody: `
+            <div style="text-align: center;">
+              <strong>O'Marché - Votre marché en ligne</strong><br/>
+              Remblais, Koumassi<br/>
+              Abidjan, Côte d'Ivoire<br/>
+              <br/>
+              Ouvert 7j/7 de 8h à 20h
+            </div>
+          `,
+          balloonContentFooter: '<div style="text-align: center;">🌟 Livraison disponible 🌟</div>'
         }, {
-          preset: 'islands#orangeShoppingIcon'
+          preset: 'islands#orangeShoppingIcon',
+          iconColor: '#f97316'
         })
 
         map.geoObjects.add(placemark)
+        map.behaviors.disable('scrollZoom') // Désactiver le zoom avec la molette
+        map.container.fitToViewport() // Ajuster la carte à la taille du conteneur
       })
     }
 
@@ -45,32 +57,32 @@ export function MapSection() {
   }, [])
 
   return (
-    <section className="bg-white w-full">
-      <div className="container mx-auto px-4 max-w-full">
+    <section className="w-full bg-white">
+      <div className="w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center py-12"
         >
           <div className="inline-flex items-center justify-center space-x-2 mb-4">
             <MapPin className="h-6 w-6 text-orange-500" />
             <h2 className="text-3xl font-bold">Notre Emplacement</h2>
           </div>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-600 max-w-2xl mx-auto px-4">
             Retrouvez-nous à Koumassi, Remblais - Abidjan. Notre équipe est là pour vous accueillir et vous guider dans vos achats.
           </p>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           className="w-full"
         >
           <div 
             id="map" 
-            className="w-full h-[500px]"
+            className="w-full h-[600px]"
             style={{ background: '#f0f0f0' }}
           />
         </motion.div>

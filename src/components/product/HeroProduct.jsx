@@ -1,145 +1,195 @@
 'use client'
 
-import React from 'react'
-import Image from 'next/image'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ShoppingCart } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '../ui/button'
+import { Badge } from '../ui/badge'
+import { Minus, Plus, ShoppingCart } from 'lucide-react'
+import { useCart } from '../../context/CartContext'
+
+const imageVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  show: { 
+    opacity: 1, 
+    scale: 1,
+    transition: { duration: 0.5 }
+  }
+}
+
+const contentVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.5, delay: 0.2 }
+  }
+}
 
 export function HeroProduct({ product }) {
+  const [quantity, setQuantity] = useState(1)
+  const [selectedImage, setSelectedImage] = useState(0)
+  const { addToCart } = useCart()
+
+  const handleQuantityChange = (delta) => {
+    const newQuantity = quantity + delta
+    if (newQuantity >= 1 && newQuantity <= parseInt(product.stock)) {
+      setQuantity(newQuantity)
+    }
+  }
+
+  const handleAddToCart = () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(50)
+    }
+    addToCart(product, quantity)
+  }
+
   return (
-    <div className="relative w-full">
-      <section className="relative h-[80vh] overflow-hidden bg-gradient-to-r from-[#126803] to-green-700">
-        {/* Éléments décoratifs */}
-        <div className="absolute inset-0 bg-[url('/dots.png')] opacity-10" />
-        
-        <div className="container mx-auto h-full relative">
-          <div className="grid grid-cols-2 h-full items-center gap-8">
-            {/* Contenu texte */}
-            <div className="space-y-6 z-10">
-              <motion.div
-                initial={{ opacity: 0, y: 200 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <h1 className="text-6xl font-bold">
-                  <span className="text-orange-500 font-handwriting">Méga</span>
-                  <br />
-                  <span className="text-white">PROMO</span>
-                </h1>
-              </motion.div>
-
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-white/90 text-lg max-w-md"
-              >
-                Cette semaine uniquement, profitez de nos offres exceptionnelles
-                sur une sélection de produits frais et locaux. Livraison gratuite
-                dès 30 000 FCFA d'achat !
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="flex items-center gap-6"
-              >
-                <Button 
-                  size="lg"
-                  className="bg-orange-600 hover:bg-orange-700 text-white px-8"
-                >
-                  <ShoppingCart className="mr-2 h-5 w-5" />
-                  En profiter
-                </Button>
-
-                <div className="bg-orange-500/40 rounded-full px-6 py-3 text-white">
-                  <span className="text-orange-500 font-bold text-2xl">-50%</span> sur tout
-                </div>
-              </motion.div>
-            </div>
-
-            {/* Image de produits */}
+    <section className="py-8 md:py-16 bg-white">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          {/* Images Section */}
+          <div className="w-full lg:w-1/2">
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
-              className="relative h-full flex items-center justify-center"
+              variants={imageVariants}
+              initial="hidden"
+              animate="show"
+              className="relative aspect-square rounded-lg overflow-hidden bg-gray-100"
             >
-              <div className="relative w-[500px] h-[400px]">
-                <Image
-                  src="/basket.png"
-                  alt="Panier de légumes frais"
-                  fill
-                  className="object-contain"
-                  priority
-                />
+              <Image
+                src={product.images[selectedImage]?.image_url || '/placeholder.png'}
+                alt={product.name}
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                priority
+              />
+              {product.discount > 0 && (
+                <Badge className="absolute top-4 right-4 bg-orange-500">
+                  -{product.discount}%
+                </Badge>
+              )}
+            </motion.div>
+
+            {/* Thumbnails */}
+            {product.images.length > 1 && (
+              <motion.div 
+                variants={contentVariants}
+                initial="hidden"
+                animate="show"
+                className="grid grid-cols-4 gap-2 mt-4"
+              >
+                {product.images.map((image, index) => (
+                  <button
+                    key={image.id}
+                    onClick={() => setSelectedImage(index)}
+                    className={`relative aspect-square rounded-md overflow-hidden ${
+                      selectedImage === index ? 'ring-2 ring-orange-500' : 'ring-1 ring-gray-200'
+                    }`}
+                  >
+                    <Image
+                      src={image.image_url}
+                      alt={`${product.name} - Image ${index + 1}`}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 768px) 25vw, 10vw"
+                    />
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </div>
+
+          {/* Content Section */}
+          <motion.div 
+            variants={contentVariants}
+            initial="hidden"
+            animate="show"
+            className="w-full lg:w-1/2 flex flex-col"
+          >
+            <div className="flex flex-col space-y-4">
+              <div>
+                <Badge variant="outline" className="mb-2 bg-green-50">
+                  {product.category_name}
+                </Badge>
+                <h1 className="text-3xl md:text-4xl font-bold">{product.name}</h1>
+                <p className="text-gray-600 mt-2 text-lg">{product.description}</p>
               </div>
 
-              {/* Éléments flottants */}
-              <motion.div
-                className="absolute -top-26 opacity-30 -right-10 w-32 h-32"
-                animate={{
-                  y: [0, -20, 0],
-                  rotate: [0, 360, 0],
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
-                <Image
-                  src="/tomato.png"
-                  alt=""
-                  width={128}
-                  height={128}
-                  className="w-full h-full object-contain"
-                />
-              </motion.div>
+              <div className="flex items-baseline gap-4">
+                <span className="text-3xl font-bold text-orange-600">
+                  {product.price} FCFA
+                </span>
+                {product.old_price && (
+                  <span className="text-xl text-gray-500 line-through">
+                    {product.old_price} FCFA
+                  </span>
+                )}
+              </div>
 
-              <motion.div
-                className="absolute bottom-20  -left-10 w-40 h-40"
-                animate={{
-                  y: [0, 20, 0],
-                  rotate: [0, -360, 0],
-                }}
-                transition={{
-                  duration: 10,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 1
-                }}
+              <div className="space-y-6 py-6 border-y border-gray-200">
+                {/* Stock Status */}
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Disponibilité:</p>
+                  <p className={`font-medium ${parseInt(product.stock) > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {parseInt(product.stock) > 0 ? 'En stock' : 'Rupture de stock'}
+                  </p>
+                </div>
+
+                {/* Quantity Selector */}
+                <div>
+                  <p className="text-sm text-gray-600 mb-2">Quantité:</p>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center border rounded-md">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleQuantityChange(-1)}
+                        disabled={quantity <= 1}
+                        className="h-10 w-10"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="w-12 text-center">{quantity}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleQuantityChange(1)}
+                        disabled={quantity >= parseInt(product.stock)}
+                        className="h-10 w-10"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <span className="text-sm text-gray-500">
+                      {product.stock} unités disponibles
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Add to Cart Button */}
+              <Button
+                size="lg"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white gap-2"
+                onClick={handleAddToCart}
+                disabled={parseInt(product.stock) <= 0}
               >
-                <Image
-                  src="/leaf.png"
-                  alt=""
-                  width={160}
-                  height={160}
-                  className="w-full h-full object-contain"
-                />
-              </motion.div>
-            </motion.div>
-          </div>
+                <ShoppingCart className="h-5 w-5" />
+                Ajouter au panier
+              </Button>
+
+              {/* Additional Info */}
+              <div className="mt-8 space-y-4 text-sm text-gray-600">
+                <p>✓ Produit frais</p>
+                <p>✓ Livraison disponible</p>
+                <p>✓ Paiement sécurisé</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
-      </section>
-
-      {/* Vague décorative */}
-      <div className="absolute bottom-0 w-screen left-[50%] translate-x-[-50%] overflow-hidden">
-        <svg
-          viewBox="0 0 1440 120"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-[120%] h-[60px]"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0 0L48 8.875C96 17.75 192 35.5 288 44.375C384 53.25 480 53.25 576 44.375C672 35.5 768 17.75 864 26.625C960 35.5 1056 71 1152 79.875C1248 88.75 1344 71 1392 62.125L1440 53.25V120H1392C1344 120 1248 120 1152 120C1056 120 960 120 864 120C768 120 672 120 576 120C480 120 384 120 288 120C192 120 96 120 48 120H0V0Z"
-            fill="white"
-          />
-        </svg>
       </div>
-    </div>
+    </section>
   )
 }

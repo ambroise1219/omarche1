@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Card } from "../ui/card"
 import { Badge } from "../ui/badge"
-import { Search, Filter, Star } from 'lucide-react'
+import { Search, Filter, Star, ShoppingCart } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -23,33 +23,42 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetClose,
 } from "../ui/sheet"
 import Link from 'next/link'
+import { useCart } from '../../context/CartContext'
 
-/**
- * Composant pour afficher la section des produits.
- */
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+}
+
 export function ProductSection() {
-  // États pour gérer les données et le chargement
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
+  const { addToCart } = useCart()
 
-  // État pour gérer les filtres
   const [filters, setFilters] = useState({
     search: '',
     category: 'all',
-    priceRange: [0, 10000], // Prix en FCFA
+    priceRange: [0, 10000],
     sort: 'popular'
   })
 
-  /**
-   * Chargement des données depuis l'API.
-   */
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Chargement parallèle des produits et catégories
         const [productsRes, categoriesRes] = await Promise.all([
           fetch('/api/products'),
           fetch('/api/categories')
@@ -61,13 +70,9 @@ export function ProductSection() {
         ])
 
         setProducts(productsData)
-        // Ajout de l'option "Toutes les catégories" en première position
         setCategories([
           { id: 'all', name: 'Toutes les catégories' },
-          ...categoriesData.map(cat => ({
-            id: cat.id.toString(),
-            name: cat.name
-          }))
+          ...categoriesData
         ])
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error)
@@ -79,21 +84,14 @@ export function ProductSection() {
     fetchData()
   }, [])
 
-  /**
-   * Filtrage et tri des produits.
-   */
   const filteredProducts = products
     .filter(product => 
-      // Filtre par nom
       product.name.toLowerCase().includes(filters.search.toLowerCase()) &&
-      // Filtre par catégorie
-      (filters.category === 'all' || product.category_id.toString() === filters.category) &&
-      // Filtre par prix
+      (filters.category === 'all' || product.category_id === filters.category) &&
       product.price >= filters.priceRange[0] &&
       product.price <= filters.priceRange[1]
     )
     .sort((a, b) => {
-      // Tri des produits
       switch (filters.sort) {
         case 'price-asc':
           return a.price - b.price
@@ -101,39 +99,30 @@ export function ProductSection() {
           return b.price - a.price
         case 'name':
           return a.name.localeCompare(b.name)
-        default: // 'popular'
+        default:
           return b.popularity - a.popularity
       }
     })
+    .slice(0, 8) // Limite à 8 produits pour la page d'accueil
 
-  /**
-   * Formatage des prix en FCFA.
-   * @param {number} price Prix à formater
-   * @returns {string} Prix formaté
-   */
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'XOF',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(price)
+  const handleAddToCart = (e, product) => {
+    e.preventDefault()
+    if ('vibrate' in navigator) {
+      navigator.vibrate(50)
+    }
+    addToCart(product, 1)
   }
 
-  /**
-   * Composant pour la barre latérale des filtres.
-   */
   const FilterSidebar = () => (
     <div className="space-y-6">
-      {/* Filtres par catégorie */}
       <div>
         <h3 className="font-medium mb-4">Catégories</h3>
-        <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-2">
           {categories.map(category => (
             <Button
               key={category.id}
               variant={filters.category === category.id ? "secondary" : "ghost"}
-              className="w-full justify-start"
+              className="w-full justify-start text-sm"
               onClick={() => setFilters(prev => ({ ...prev, category: category.id }))}
             >
               {category.name}
@@ -144,27 +133,25 @@ export function ProductSection() {
 
       <Separator />
 
-      {/* Filtre par prix */}
       <div>
         <h3 className="font-medium mb-4">Prix</h3>
         <div className="px-2">
           <Slider
-            defaultValue={[0, 100000]}
-            max={100000}
-            step={1000}
+            defaultValue={[0, 10000]}
+            max={10000}
+            step={100}
             value={filters.priceRange}
             onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: value }))}
           />
           <div className="flex justify-between mt-2 text-sm text-gray-600">
-            <span>{formatPrice(filters.priceRange[0])}</span>
-            <span>{formatPrice(filters.priceRange[1])}</span>
+            <span>{filters.priceRange[0]} FCFA</span>
+            <span>{filters.priceRange[1]} FCFA</span>
           </div>
         </div>
       </div>
 
       <Separator />
 
-      {/* Options de tri */}
       <div>
         <h3 className="font-medium mb-4">Trier par</h3>
         <Select 
@@ -185,100 +172,140 @@ export function ProductSection() {
     </div>
   )
 
-  if (loading) return <div className="py-16 text-center">Chargement...</div>
+  if (loading) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500" />
+      </div>
+    )
+  }
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-8 md:py-16 bg-white">
       <div className="container mx-auto px-4">
-        {/* En-tête avec titre et bouton filtres mobile */}
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold">Nos Produits</h2>
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold">Nos Produits</h2>
+            <p className="text-gray-600 mt-2">Découvrez notre sélection de produits frais</p>
+          </div>
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="outline" className="lg:hidden">
+              <Button variant="outline" size="sm" className="lg:hidden">
                 <Filter className="h-4 w-4 mr-2" />
                 Filtres
               </Button>
             </SheetTrigger>
-            <SheetContent side="left">
+            <SheetContent side="right" className="w-full sm:max-w-lg">
               <SheetHeader>
                 <SheetTitle>Filtres</SheetTitle>
               </SheetHeader>
-              <div className="mt-8">
-                <FilterSidebar />
+              <FilterSidebar />
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t">
+                <SheetClose asChild>
+                  <Button className="w-full">Appliquer les filtres</Button>
+                </SheetClose>
               </div>
             </SheetContent>
           </Sheet>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar Filtres - Desktop */}
           <div className="hidden lg:block w-64 flex-shrink-0">
             <FilterSidebar />
           </div>
 
-          {/* Liste des produits */}
-          <div className="flex-1">
-            {/* Barre de recherche */}
-            <div className="mb-6">
-              <Input
-                type="text"
-                placeholder="Rechercher un produit..."
-                value={filters.search}
-                onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                className="max-w-md"
-              />
+          <div className="flex-grow">
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="relative flex-grow">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Input
+                  type="text"
+                  placeholder="Rechercher un produit..."
+                  className="pl-10"
+                  value={filters.search}
+                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                />
+              </div>
+              <Select
+                value={filters.sort}
+                onValueChange={(value) => setFilters(prev => ({ ...prev, sort: value }))}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Trier par" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="popular">Popularité</SelectItem>
+                  <SelectItem value="price-asc">Prix croissant</SelectItem>
+                  <SelectItem value="price-desc">Prix décroissant</SelectItem>
+                  <SelectItem value="name">Nom</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Grille des produits */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            >
               {filteredProducts.map((product) => (
-                <Link href={`/produits/${product.id}`} key={product.id}>
-                  <Card className="overflow-hidden group cursor-pointer transition-transform duration-200 hover:scale-[1.02]">
-                    <div className="relative aspect-square">
+                <motion.div
+                  key={product.id}
+                  variants={itemVariants}
+                  className="touch-manipulation"
+                >
+                  <Card className="overflow-hidden hover:shadow-lg transition-shadow group h-full flex flex-col">
+                    <Link href={`/produits/${product.id}`} className="block relative pt-[100%]">
                       <Image
-                        src={product.images[0]?.image_url || '/placeholder.png'}
+                        src={product.images?.[0]?.image_url || '/placeholder.png'}
                         alt={product.name}
                         fill
-                        className="object-contain"
+                        className="object-contain group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                       />
                       {product.discount > 0 && (
-                        <Badge className="absolute top-2 right-2 bg-orange-500 text-white">
+                        <Badge className="absolute top-2 right-2 bg-orange-500">
                           -{product.discount}%
                         </Badge>
                       )}
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-semibold text-lg group-hover:text-orange-500 transition-colors">
-                        {product.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-2">{product.category}</p>
-                      <div className="flex items-center gap-2">
-                        <p className="font-bold text-orange-600">
-                          {formatPrice(product.price)}
-                        </p>
-                        {product.old_price && (
-                          <p className="text-sm text-gray-500 line-through">
-                            {formatPrice(product.old_price)}
-                          </p>
-                        )}
+                    </Link>
+                    <div className="p-3 md:p-4 flex-grow flex flex-col">
+                      <Link href={`/produits/${product.id}`}>
+                        <h3 className="font-semibold mb-1 md:mb-2 group-hover:text-orange-500 transition-colors line-clamp-1">
+                          {product.name}
+                        </h3>
+                      </Link>
+                      <p className="text-xs md:text-sm text-gray-600 mb-2 line-clamp-2 flex-grow">
+                        {product.description}
+                      </p>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="font-bold text-orange-600 text-sm md:text-base">
+                          {product.price} FCFA
+                        </span>
+                        <Badge variant="outline" className="bg-green-50 text-xs">
+                          {product.category_name}
+                        </Badge>
                       </div>
-                      <div className="flex items-center gap-1 mt-2">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-4 h-4 ${
-                              i < product.rating
-                                ? 'text-yellow-400 fill-yellow-400'
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
+                      <Button 
+                        className="w-full bg-orange-500 hover:bg-orange-600 text-white gap-2 text-sm md:text-base py-1.5 md:py-2"
+                        onClick={(e) => handleAddToCart(e, product)}
+                      >
+                        <ShoppingCart className="h-4 w-4" />
+                        <span className="hidden md:inline">Ajouter au panier</span>
+                        <span className="md:hidden">Ajouter</span>
+                      </Button>
                     </div>
                   </Card>
-                </Link>
+                </motion.div>
               ))}
+            </motion.div>
+
+            <div className="mt-8 text-center">
+              <Link href="/produits">
+                <Button variant="outline" size="lg">
+                  Voir tous les produits
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
