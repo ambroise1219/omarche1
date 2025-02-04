@@ -9,6 +9,7 @@ CREATE TABLE users (
     profile_bio TEXT,
     address TEXT,
     profile_image_url VARCHAR(255),
+    location VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT valid_phone_number CHECK (phone_number ~ '^[+]?[0-9]{10,15}$')
 );

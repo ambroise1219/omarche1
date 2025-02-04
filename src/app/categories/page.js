@@ -1,48 +1,11 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Navigation } from '../../components/landing/Navigation'  
 import Image from 'next/image'
 import Link from 'next/link'
-
-const categories = [
-  {
-    id: 1,
-    name: 'Fruits',
-    image: '/categories/fruits.jpg',
-    productCount: 24
-  },
-  {
-    id: 2,
-    name: 'Légumes',
-    image: '/categories/legumes.jpg',
-    productCount: 32
-  },
-  {
-    id: 3,
-    name: 'Viandes',
-    image: '/categories/viandes.jpg',
-    productCount: 18
-  },
-  {
-    id: 4,
-    name: 'Poissons',
-    image: '/categories/poissons.jpg',
-    productCount: 15
-  },
-  {
-    id: 5,
-    name: 'Produits Laitiers',
-    image: '/categories/laitiers.jpg',
-    productCount: 28
-  },
-  {
-    id: 6,
-    name: 'Boissons',
-    image: '/categories/boissons.jpg',
-    productCount: 20
-  }
-]
+import { toast } from 'sonner'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -68,6 +31,42 @@ const itemVariants = {
 }
 
 export default function CategoriesPage() {
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories')
+        if (!response.ok) throw new Error('Erreur lors du chargement des catégories')
+        const data = await response.json()
+        setCategories(data)
+      } catch (error) {
+        console.error('Erreur:', error)
+        toast.error("Impossible de charger les catégories")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCategories()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-custom-green to-custom-green/90">
+        <Navigation />
+        <main className="container mx-auto px-4 pt-32 pb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="relative h-64 rounded-xl overflow-hidden animate-pulse bg-white/10" />
+            ))}
+          </div>
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-custom-green to-custom-green/90">
       <Navigation />
@@ -78,7 +77,7 @@ export default function CategoriesPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="font-paytone text-4xl md:text-5xl text-white mb-4">
+          <h1 className="font-paytone font-bold text-4xl md:text-5xl text-white mb-4">
             Nos Catégories
           </h1>
           <p className="text-white/80 text-lg max-w-2xl mx-auto">
@@ -103,7 +102,7 @@ export default function CategoriesPage() {
                 <div className="relative h-64 rounded-xl overflow-hidden">
                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors z-10" />
                   <Image
-                    src={category.image}
+                    src={category.image_url}
                     alt={category.name}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -114,7 +113,7 @@ export default function CategoriesPage() {
                     </h2>
                     <div className="bg-white/20 backdrop-blur-sm rounded-lg py-2 px-4 self-start">
                       <span className="text-white">
-                        {category.productCount} produits
+                        {category.description}
                       </span>
                     </div>
                   </div>

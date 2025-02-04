@@ -1,50 +1,53 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 const AuthContext = createContext()
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  // Vérifier l'authentification au chargement
+  // Vérifier l'état de l'authentification au chargement
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // Vérifier si le cookie token existe
-        const token = document.cookie.split('; ').find(row => row.startsWith('token='))
-        if (!token) {
-          setUser(null)
-          setIsLoading(false)
-          return
-        }
-
-        // Récupérer les informations de l'utilisateur
-        const response = await fetch('/api/auth/me')
-        if (response.ok) {
-          const data = await response.json()
-          setUser(data.user)
-        } else {
-          setUser(null)
-          // Supprimer le cookie si le token n'est pas valide
-          document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
-        }
-      } catch (error) {
-        console.error('Erreur lors de la vérification de l\'authentification:', error)
-        setUser(null)
-        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
     checkAuth()
   }, [])
 
-  // Fonction de connexion
+  const checkAuth = async () => {
+    try {
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include'
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log('AuthContext - Utilisateur vérifié:', data)
+        setUser(data.user)
+      } else {
+        const error = await response.json()
+        console.log('AuthContext - Erreur d\'authentification:', error)
+        setUser(null)
+        
+        // Si on est sur une page protégée, rediriger vers la page de connexion
+        if (window.location.pathname !== '/auth') {
+          router.push('/auth?redirectTo=' + window.location.pathname)
+        }
+      }
+    } catch (error) {
+      console.error('AuthContext - Erreur de vérification:', error)
+      setUser(null)
+      
+      // Si on est sur une page protégée, rediriger vers la page de connexion
+      if (window.location.pathname !== '/auth') {
+        router.push('/auth?redirectTo=' + window.location.pathname)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const login = async (email, password) => {
     try {
       const response = await fetch('/api/auth/login', {
@@ -53,22 +56,36 @@ export function AuthProvider({ children }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include'
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de la connexion')
+        throw new Error(data.error || 'Erreur de connexion')
       }
 
+      console.log('AuthContext - Connexion réussie:', data.user)
       setUser(data.user)
+
+      // Vérifier immédiatement l'authentification après la connexion
+      await checkAuth()
+
+      // Rediriger vers la page précédente ou la page de profil
+      const redirectTo = new URLSearchParams(window.location.search).get('redirectTo')
+      if (redirectTo) {
+        router.push(redirectTo)
+      } else {
+        router.push('/profile')
+      }
+
       return data
     } catch (error) {
+      console.error('AuthContext - Erreur de connexion:', error)
       throw error
     }
   }
 
-  // Fonction d'inscription
   const register = async (userData) => {
     try {
       const response = await fetch('/api/auth/register', {
@@ -77,36 +94,54 @@ export function AuthProvider({ children }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(userData),
+        credentials: 'include'
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de l\'inscription')
+        throw new Error(data.error || 'Erreur d\'inscription')
       }
+
+      console.log('AuthContext - Inscription réussie:', data)
+      setUser(data.user)
+      router.push('/profile')
 
       return data
     } catch (error) {
+      console.error('AuthContext - Erreur d\'inscription:', error)
       throw error
     }
   }
 
-  // Fonction de déconnexion
-  const logout = () => {
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT'
-    setUser(null)
-    router.push('/auth')
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      })
+      
+      setUser(null)
+      router.push('/auth')
+    } catch (error) {
+      console.error('AuthContext - Erreur de déconnexion:', error)
+    }
   }
 
-  const value = {
-    user,
-    isLoading,
-    login,
-    register,
-    logout,
-  }
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider 
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        checkAuth
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export const useAuth = () => {

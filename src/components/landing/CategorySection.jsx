@@ -1,10 +1,17 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import useEmblaCarousel from 'embla-carousel-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Button } from '../ui/button'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 }
+}
 
 /**
  * Composant pour afficher la section des catégories.
@@ -14,14 +21,6 @@ export function CategorySection() {
   // États pour gérer les données et le chargement
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
-  
-  // Configuration du carousel Embla
-  const [emblaRef] = useEmblaCarousel({ 
-    loop: true,
-    align: 'center',
-    dragFree: true,
-    containScroll: 'trimSnaps'
-  })
 
   // Chargement des catégories depuis l'API
   useEffect(() => {
@@ -45,6 +44,16 @@ export function CategorySection() {
     fetchCategories()
   }, [])
 
+  const scrollContainerRef = useRef(null)
+
+  const scroll = (direction) => {
+    const container = scrollContainerRef.current
+    if (container) {
+      const scrollAmount = direction === 'left' ? -200 : 200
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+    }
+  }
+
   if (loading) return <div className="py-12 text-center">Chargement...</div>
 
   if (categories.length === 0) {
@@ -52,50 +61,80 @@ export function CategorySection() {
   }
 
   return (
-    <section className="py-12 bg-white">
+    <section className="py-16 justify-center bg-gray-50">
       <div className="container mx-auto px-4">
-        {/* Titre de la section */}
-        <motion.h2 
-          className="text-2xl font-bold mb-8 text-center text-gray-800"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-12"
         >
-          Catégories
-        </motion.h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Nos Catégories
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Découvrez notre sélection de produits frais et locaux, 
+            soigneusement classés par catégories pour faciliter vos achats.
+          </p>
+        </motion.div>
 
-        {/* Carousel des catégories */}
-        <div className="overflow-hidden" ref={emblaRef}>
-          <div className="flex gap-6 justify-center">
+        <div className="relative">
+          {/* Boutons de navigation */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-lg hidden md:flex"
+            onClick={() => scroll('left')}
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-lg hidden md:flex"
+            onClick={() => scroll('right')}
+          >
+            <ChevronRight className="h-6 w-6" />
+          </Button>
+
+          {/* Container des catégories */}
+          <div 
+            ref={scrollContainerRef}
+            className="flex gap-6 overflow-x-auto itemms-center justify-centersnap-x snap-mandatory pb-6 px-4 md:px-0 scrollbar-hide"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
             {categories.map((category) => (
-              <Link 
+              <motion.div
                 key={category.id}
-                href={`/categories/${category.id}`}
-                className="flex-[0_0_auto]"
+                variants={fadeIn}
+                initial="initial"
+                whileInView="animate"
+                viewport={{ once: true }}
+                className="flex-none w-[120px]"
               >
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  whileHover={{ scale: 1.05 }}
-                  className={`rounded-full aspect-square w-28 flex flex-col items-center justify-center p-4 bg-${category.color || 'orange'}-100 transition-transform hover:shadow-lg`}
-                >
-                  {/* Image de la catégorie */}
-                  <div className="relative w-16 h-16 mb-2">
-                    <Image
-                      src={category.image_url}
-                      alt={category.name}
-                      fill
-                      className="object-cover rounded-full"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
+                <Link href={`/categories/${category.id}`}>
+                  <div className="flex flex-col items-center group">
+                    <div className="w-28 h-28 rounded-full bg-orange-100 shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 group-hover:scale-105 relative">
+                      <Image
+                        src={category.image_url}
+                        alt={category.name}
+                        fill
+                        className="object-contain rounded-full p-1"
+                        sizes="120px"
+                      />
+                    </div>
+                    <h3 className="mt-3 text-sm font-medium text-center text-gray-700 group-hover:text-orange-500 transition-colors">
+                      {category.name}
+                    </h3>
                   </div>
-                  {/* Nom de la catégorie */}
-                  <span className="text-sm font-medium text-gray-800 text-center">
-                    {category.name}
-                  </span>
-                </motion.div>
-              </Link>
+                </Link>
+              </motion.div>
             ))}
           </div>
         </div>

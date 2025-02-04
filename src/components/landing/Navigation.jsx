@@ -1,21 +1,30 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Menu, X, Search, ShoppingCart, User, LogOut } from 'lucide-react'
 import { Button } from '../ui/button'
 import { CartModal } from '../cart/CartModal'
-import { Menu, X, Search } from 'lucide-react'
 import { Input } from '../ui/input'
 import { useCart } from '../../context/CartContext'
 import { useAuth } from '../../context/AuthContext'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const { cartItems = [] } = useCart() || {}
   const { user, logout } = useAuth() || {}
-  const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,21 +55,19 @@ export function Navigation() {
       }`}
     >
       <div className="container items-center mx-auto px-4">
-        <div className="flex items-center  justify-between">
+        <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="relative z-10">
             <div className="flex items-center gap-3">
-              <div className=" ">
+              <div className="">
                 <Image
                   src="/logo.webp"
                   alt="Omarche Logo"
-        
                   className="object-contain p-1"
                   width={200}  
                   height={200}
                 />
               </div>
-              
             </div>
           </Link>
 
@@ -93,34 +100,45 @@ export function Navigation() {
             <div className="hidden md:flex items-center gap-4">
               <CartModal />
               {user ? (
-                <>
-                  <Button 
-                    variant="outline" 
-                    className="border-2 border-white bg-transparent text-white hover:bg-orange-500 hover:border-orange-500 transition-colors"
-                    onClick={handleLogout}
-                  >
-                    Déconnexion
-                  </Button>
-                </>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="w-10 h-10 cursor-pointer">
+                      <AvatarImage src={`https://api.dicebear.com/7.x/micah/svg?seed=${user.username}`} />
+                      <AvatarFallback className="bg-orange-500/10">
+                        {user.username?.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{user.username}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => router.push('/profile')}>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="text-red-600 focus:text-red-600" 
+                      onClick={async () => {
+                        await logout()
+                        router.push('/auth')
+                        toast.success('Déconnexion réussie')
+                      }}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Se déconnecter</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ) : (
-                <>
-                  <Link href="/auth">
-                    <Button 
-                      variant="outline" 
-                      className="border-2 border-white bg-transparent text-white hover:bg-orange-500 hover:border-orange-500 transition-colors"
-                    >
-                      Se connecter
-                    </Button>
-                  </Link>
-
-                  <Link href="/auth?mode=register">
-                    <Button 
-                      className="bg-orange-500 text-white hover:bg-orange-600 transition-colors"
-                    >
-                      S&apos;inscrire
-                    </Button>
-                  </Link>
-                </>
+                <Link href="/auth">
+                  <Button>Se connecter</Button>
+                </Link>
               )}
             </div>
 

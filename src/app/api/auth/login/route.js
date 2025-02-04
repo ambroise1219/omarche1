@@ -1,24 +1,15 @@
 import { NextResponse } from 'next/server'
-import { compareSync } from 'bcryptjs'
 import { sign } from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
 import pool from '../../../../lib/db'
 
 export async function POST(request) {
   try {
-    const body = await request.json()
-    const { email, password } = body
+    const { email, password } = await request.json()
 
-    // Vérification des champs requis
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: 'Email et mot de passe requis' },
-        { status: 400 }
-      )
-    }
-
-    // Recherche de l'utilisateur
+    // Vérifier les informations de connexion
     const result = await pool.query(
-      'SELECT * FROM users WHERE email = $1',
+      'SELECT id, email, password, username, role FROM users WHERE email = $1',
       [email]
     )
 
@@ -31,51 +22,57 @@ export async function POST(request) {
       )
     }
 
-    // Vérification du mot de passe
-    const passwordMatch = compareSync(password, user.password)
+    // Vérifier le mot de passe
+    const validPassword = await bcrypt.compare(password, user.password)
 
-    if (!passwordMatch) {
+    if (!validPassword) {
       return NextResponse.json(
         { error: 'Email ou mot de passe incorrect' },
         { status: 401 }
       )
     }
 
-    // Générer le token JWT
+    // Créer le token JWT
     const token = sign(
       { 
-        userId: user.id,
+        userId: user.id, 
         email: user.email,
-        role: user.role
-      },
+        role: user.role 
+      }, 
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     )
 
-    // Créer la réponse avec le cookie
+    console.log('Login - Token généré pour:', { userId: user.id, email: user.email })
+
+    // Créer la réponse
     const response = NextResponse.json({
       user: {
         id: user.id,
         email: user.email,
         username: user.username,
         role: user.role
-      },
-      token
+      }
     })
 
-    // Ajouter le cookie
-    response.cookies.set({
-      name: 'token',
-      value: token,
+    // Définir le cookie avec le token
+    response.cookies.set('authToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 // 7 jours
     })
 
+    // Désactiver le cache pour la réponse de connexion
+    response.headers.set('x-middleware-cache', 'no-cache')
+    response.headers.set('Cache-Control', 'no-store, must-revalidate')
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
+    response.headers.set('Access-Control-Allow-Origin', request.headers.get('origin') || '*')
+
     return response
   } catch (error) {
-    console.error('Erreur de connexion:', error)
+    console.error('Login - Erreur:', error)
     return NextResponse.json(
       { error: 'Une erreur est survenue lors de la connexion' },
       { status: 500 }

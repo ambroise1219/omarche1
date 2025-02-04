@@ -36,9 +36,11 @@ export default function AuthPage() {
   // Rediriger si déjà connecté
   useEffect(() => {
     if (user) {
-      router.push('/')
+      // Récupérer l'URL de redirection depuis les paramètres
+      const redirectTo = searchParams.get('redirectTo')
+      router.push(redirectTo || '/')
     }
-  }, [user, router])
+  }, [user, router, searchParams])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -49,7 +51,6 @@ export default function AuthPage() {
         // Connexion
         await login(formData.email, formData.password)
         toast.success('Connexion réussie')
-        router.push('/')
       } else {
         // Inscription
         if (formData.password !== formData.confirmPassword) {
@@ -57,24 +58,18 @@ export default function AuthPage() {
           return
         }
 
-        // Validation du numéro de téléphone
-        const phoneRegex = /^[+]?[0-9]{10,15}$/
-        if (!phoneRegex.test(formData.phoneNumber)) {
-          toast.error('Le numéro de téléphone est invalide')
-          return
-        }
-
-        await register({
-          username: formData.username,
+        const userData = {
           email: formData.email,
           password: formData.password,
-          phoneNumber: formData.phoneNumber,
-        })
-        
-        toast.success('Inscription réussie, vous pouvez maintenant vous connecter')
-        router.push('/auth?mode=login')
+          username: formData.username,
+          phoneNumber: formData.phoneNumber
+        }
+
+        await register(userData)
+        toast.success('Inscription réussie')
       }
     } catch (error) {
+      console.error('Erreur:', error)
       toast.error(error.message || 'Une erreur est survenue')
     } finally {
       setLoading(false)

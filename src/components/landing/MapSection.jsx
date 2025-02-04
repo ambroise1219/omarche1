@@ -1,21 +1,34 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin } from 'lucide-react'
 
 export function MapSection() {
-  useEffect(() => {
-    // Charger le script Yandex Maps
-    const script = document.createElement('script')
-    script.src = 'https://api-maps.yandex.ru/2.1/?lang=fr_FR'
-    script.async = true
-    document.body.appendChild(script)
+  const mapRef = useRef(null)
 
-    script.onload = () => {
+  useEffect(() => {
+    let map = null
+    let scriptElement = null
+
+    // Vérifier si le script existe déjà
+    const existingScript = document.querySelector('script[src*="api-maps.yandex.ru"]')
+    if (existingScript) {
+      return
+    }
+
+    // Charger le script Yandex Maps
+    scriptElement = document.createElement('script')
+    scriptElement.src = 'https://api-maps.yandex.ru/2.1/?lang=fr_FR'
+    scriptElement.async = true
+    document.body.appendChild(scriptElement)
+
+    scriptElement.onload = () => {
       // Initialiser la carte une fois le script chargé
       window.ymaps.ready(() => {
-        const map = new window.ymaps.Map('map', {
+        if (!mapRef.current) return
+
+        map = new window.ymaps.Map('map', {
           center: [5.3011744, -3.9666682], // Coordonnées de Koumassi, Remblais
           zoom: 15,
           controls: ['zoomControl', 'fullscreenControl']
@@ -42,16 +55,21 @@ export function MapSection() {
         })
 
         map.geoObjects.add(placemark)
-        map.behaviors.disable('scrollZoom') // Désactiver le zoom avec la molette
-        map.container.fitToViewport() // Ajuster la carte à la taille du conteneur
+        map.behaviors.disable('scrollZoom')
+        map.container.fitToViewport()
       })
     }
 
     return () => {
-      // Nettoyer le script lors du démontage
-      const scriptElement = document.querySelector('script[src*="api-maps.yandex.ru"]')
-      if (scriptElement) {
-        document.body.removeChild(scriptElement)
+      // Nettoyer la carte et le script lors du démontage
+      if (map && map.destroy) {
+        map.destroy()
+      }
+      
+      // Ne pas supprimer le script si d'autres instances en ont besoin
+      const otherMaps = document.querySelectorAll('#map')
+      if (otherMaps.length <= 1 && scriptElement && scriptElement.parentNode) {
+        scriptElement.parentNode.removeChild(scriptElement)
       }
     }
   }, [])
@@ -82,6 +100,7 @@ export function MapSection() {
         >
           <div 
             id="map" 
+            ref={mapRef}
             className="w-full h-[600px]"
             style={{ background: '#f0f0f0' }}
           />

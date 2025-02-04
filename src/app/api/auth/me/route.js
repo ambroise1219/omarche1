@@ -5,37 +5,78 @@ import pool from '../../../../lib/db'
 export async function GET(request) {
   try {
     // Récupérer le token depuis les cookies
-    const token = request.cookies.get('token')?.value
+    const authToken = request.cookies.get('authToken')?.value
 
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Non autorisé' },
-        { status: 401 }
-      )
+    if (!authToken) {
+      console.log('/api/auth/me - Pas de token trouvé')
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
     }
 
     // Vérifier le token
-    const decoded = verify(token, process.env.JWT_SECRET)
+    const decoded = verify(authToken, process.env.JWT_SECRET)
+    console.log('/api/auth/me - Token vérifié:', { userId: decoded.userId })
 
-    // Récupérer les données de l'utilisateur
+    // Récupérer les informations de l'utilisateur
     const result = await pool.query(
-      'SELECT id, email, username, role FROM users WHERE id = $1',
+      'SELECT id, email, username, role, phone_number, location, profile_image_url FROM users WHERE id = $1',
       [decoded.userId]
     )
 
-    if (result.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Utilisateur non trouvé' },
-        { status: 404 }
-      )
+    const user = result.rows[0]
+
+    if (!user) {
+      console.log('/api/auth/me - Utilisateur non trouvé')
+      return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })
     }
 
-    return NextResponse.json({ user: result.rows[0] })
+    // Créer la réponse avec les informations de l'utilisateur
+    const response = NextResponse.json({ 
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        phone_number: user.phone_number || '',
+        location: user.location || '',
+        profile_image_url: user.profile_image_url || ''
+      }
+    })
+
+    // Conserver le cookie dans la réponse
+    response.cookies.set('authToken', authToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60 // 7 jours
+    })
+
+    return response
+
   } catch (error) {
-    console.error('Erreur dans /api/auth/me:', error)
+    console.error('/api/auth/me - Erreur:', error)
+    
+    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+      // Si le token est invalide ou expiré, supprimer le cookie
+      const response = NextResponse.json(
+        { error: 'Token invalide ou expiré' },
+        { status: 401 }
+      )
+      
+      response.cookies.set('authToken', '', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        expires: new Date(0)
+      })
+      
+      return response
+    }
+
     return NextResponse.json(
-      { error: 'Non autorisé' },
-      { status: 401 }
+      { error: 'Erreur serveur' },
+      { status: 500 }
     )
   }
 }
