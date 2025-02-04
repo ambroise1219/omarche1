@@ -3,6 +3,7 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react'
 import { useCart } from '../../context/CartContext'  
@@ -18,6 +19,7 @@ import { Badge } from '../ui/badge'
 import { Separator } from '../ui/separator'
 
 export function CartModal() {
+  const router = useRouter()
   const {
     cart,
     removeFromCart,
@@ -28,6 +30,11 @@ export function CartModal() {
     setIsCartOpen
   } = useCart()
 
+  const handleCheckout = () => {
+    setIsCartOpen(false)
+    router.push('/commande')
+  }
+
   return (
     <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
       <SheetTrigger asChild>
@@ -37,7 +44,7 @@ export function CartModal() {
           className="relative"
           onClick={() => setIsCartOpen(true)}
         >
-          <ShoppingBag className="h-6 w-6 text-white hover:text-orange-500 " />
+          <ShoppingBag className="h-6 w-6 text-white hover:text-orange-500" />
           {getCartCount() > 0 && (
             <Badge
               className="absolute -top-2 -right-2 bg-orange-500 p-2 text-white"
@@ -48,12 +55,12 @@ export function CartModal() {
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-lg">
+      <SheetContent className="w-full sm:max-w-lg flex flex-col">
         <SheetHeader>
           <SheetTitle>Votre Panier</SheetTitle>
         </SheetHeader>
         
-        <div className="mt-8 flex flex-col h-full">
+        <div className="flex-1 flex flex-col mt-8">
           {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center flex-1">
               <ShoppingBag className="h-16 w-16 text-gray-400 mb-4" />
@@ -83,10 +90,10 @@ export function CartModal() {
                       onClick={() => setIsCartOpen(false)}
                     >
                       <Image
-                        src={item.images?.[0]?.url || '/placeholder.png'}
+                        src={item.images?.[0]?.image_url || '/placeholder.png'}
                         alt={item.name}
                         fill
-                        className="object-cover"
+                        className="object-contain"
                       />
                     </Link>
                     <div className="flex flex-1 flex-col">
@@ -135,7 +142,8 @@ export function CartModal() {
                 ))}
               </div>
               
-              <div className="mt-8">
+              {/* Section du total et bouton de commande */}
+              <div className="sticky bottom-0 bg-white pt-4 pb-6 mt-auto">
                 <Separator className="mb-4" />
                 <div className="flex justify-between mb-4">
                   <span className="font-medium">Total</span>
@@ -146,8 +154,9 @@ export function CartModal() {
                 <Button
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white"
                   size="lg"
+                  onClick={handleCheckout}
                 >
-                  Commander
+                  Commander maintenant
                 </Button>
               </div>
             </>

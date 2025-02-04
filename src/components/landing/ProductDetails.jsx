@@ -1,52 +1,14 @@
 'use client'
 
 import React, { useState } from 'react'
-import Image from 'next/image'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { useCart } from '@/context/CartContext'
-import { ProductImageSlider } from '@/components/product/ProductImageSlider'
-import { Truck, ShoppingCart, Clock, Shield, ChevronRight } from 'lucide-react'
-import useEmblaCarousel from 'embla-carousel-react'
-
-// Composant HeroProduct pour la bannière
-const HeroProduct = ({ images }) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 30 })
-
-  React.useEffect(() => {
-    if (emblaApi) {
-      const interval = setInterval(() => {
-        emblaApi.scrollNext()
-      }, 5000)
-
-      return () => clearInterval(interval)
-    }
-  }, [emblaApi])
-
-  return (
-    <section className="relative h-[40vh] overflow-hidden">
-      {/* Carousel */}
-      <div className="embla h-full" ref={emblaRef}>
-        <div className="embla__container h-full">
-          {images.map((image, index) => (
-            <div key={index} className="embla__slide relative w-full h-full flex-[0_0_100%]">
-              <Image
-                src={image.image_url}
-                alt={`Slide ${index + 1}`}
-                fill
-                className="object-cover"
-                priority={index === 0}
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
+import { Button } from '../ui/button'  
+import { Card } from '../ui/card'
+import { Badge } from '../ui/badge'
+import { Separator } from '../ui/separator'
+import { useCart } from '../../context/CartContext'  
+import { ProductImageSlider } from '../product/ProductImageSlider' 
+import { HeroProduct } from '../product/HeroProduct' 
+import { Truck, ShoppingCart, Star, Clock, Shield, ChevronRight } from 'lucide-react'
 
 export default function ProductDetails({ product }) {
   const [quantity, setQuantity] = useState(1)
@@ -58,8 +20,8 @@ export default function ProductDetails({ product }) {
 
   return (
     <div className="w-full">
-      {/* Hero Carousel */}
-      <HeroProduct images={product?.images || []} />
+      {/* Hero Banner */}
+      <HeroProduct />
 
       {/* Contenu principal */}
       <section className="py-16">
@@ -74,6 +36,24 @@ export default function ProductDetails({ product }) {
             <div className="space-y-8">
               <Card className="p-8">
                 <div className="space-y-6">
+                  <div className="flex items-center gap-2">
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-5 h-5 ${
+                            i < (product?.rating || 0)
+                              ? 'text-yellow-400 fill-yellow-400'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-gray-600">
+                      ({product?.reviews || 0} avis)
+                    </span>
+                  </div>
+
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">
                       {product?.name}

@@ -146,7 +146,7 @@ export function Navigation() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden text-white hover:bg-white/10"
+              className="md:hidden text-white hover:bg-white/10  "
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -161,66 +161,91 @@ export function Navigation() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="absolute top-full left-0 right-0 bg-green-700 shadow-lg rounded-b-xl md:hidden"
+              className="absolute top-full left-0 right-0 bg-custom-green shadow-lg md:hidden"
             >
-              <div className="p-4">
-                <Input
-                  type="text"
-                  placeholder="Rechercher un produit..."
-                  className="w-full pl-10 bg-white/10 border-white/20 text-white placeholder-white/60"
-                />
-                <Search className="absolute left-7 top-[1.75rem] h-4 w-4 text-white/60" />
+              {/* Barre de recherche mobile */}
+              <div className="p-4 border-b border-white/10">
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Rechercher un produit..."
+                    className="w-full pl-10 bg-white/10 border-white/20 text-white placeholder-white/60"
+                  />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
+                </div>
               </div>
 
+              {/* Menu items */}
               <nav className="flex flex-col">
                 {menuItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="px-6 py-3 text-white/90 hover:bg-green-600 hover:text-white transition-colors"
+                    className="flex items-center px-6 py-4 text-white/90 hover:bg-orange-500 hover:text-white active:bg-green-800 transition-colors"
                     onClick={() => setIsOpen(false)}
                   >
-                    {item.label}
+                    <span className="text-base">{item.label}</span>
                   </Link>
                 ))}
-                <div className="px-6 py-4 border-t border-white/10">
+              </nav>
+
+              {/* Panier et actions utilisateur */}
+              <div className="px-6 py-4 border-t border-white/10">
+                <div className="mb-4">
                   <CartModal />
-                  <div className="flex flex-col gap-3 mt-4">
-                    {user ? (
+                </div>
+
+                {/* Actions utilisateur */}
+                {user ? (
+                  <div className="space-y-4">
+                    <Link href="/profile" onClick={() => setIsOpen(false)}>
+                      <div className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/15 transition-colors">
+                        <Avatar className="h-10 w-10 hover:cursor-pointer">
+                          <AvatarImage src={`https://api.dicebear.com/7.x/micah/svg?seed=${user.username}`} />
+                          <AvatarFallback className="bg-orange-500/10">
+                            {user.username?.substring(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium text-white">{user.username}</p>
+                          <p className="text-xs text-white/60">{user.email}</p>
+                        </div>
+                      </div>
+                    </Link>
+                    <Button 
+                      variant="outline"
+                      className="w-full border-2 border-white bg-transparent text-white hover:bg-orange-500 hover:border-orange-500 active:bg-orange-600 transition-colors"
+                      onClick={() => {
+                        handleLogout()
+                        setIsOpen(false)
+                      }}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Déconnexion
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <Link href="/auth" className="block">
                       <Button 
                         variant="outline"
-                        className="w-full border-2 border-white bg-transparent text-white hover:bg-orange-500 hover:border-orange-500 transition-colors"
-                        onClick={() => {
-                          handleLogout()
-                          setIsOpen(false)
-                        }}
+                        className="w-full border-2 border-white bg-transparent text-white hover:bg-orange-500 hover:border-orange-500 active:bg-orange-600 transition-colors"
+                        onClick={() => setIsOpen(false)}
                       >
-                        Déconnexion
+                        Se connecter
                       </Button>
-                    ) : (
-                      <>
-                        <Link href="/auth">
-                          <Button 
-                            variant="outline"
-                            className="w-full border-2 border-white bg-transparent text-white hover:bg-orange-500 hover:border-orange-500 transition-colors"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            Se connecter
-                          </Button>
-                        </Link>
-                        <Link href="/auth?mode=register">
-                          <Button 
-                            className="w-full bg-orange-500 text-white hover:bg-orange-600 transition-colors"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            S&apos;inscrire
-                          </Button>
-                        </Link>
-                      </>
-                    )}
+                    </Link>
+                    <Link href="/auth?mode=register" className="block">
+                      <Button 
+                        className="w-full bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 transition-colors"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        S&apos;inscrire
+                      </Button>
+                    </Link>
                   </div>
-                </div>
-              </nav>
+                )}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

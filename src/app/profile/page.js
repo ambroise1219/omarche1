@@ -236,7 +236,7 @@ export default function ProfilePage() {
                   <Progress value={progress} className="h-2 bg-orange-100">
                     <div className="h-full bg-orange-500 transition-all" style={{ width: `${progress}%` }} />
                   </Progress>
-                  <p className="text-xs text-muted-foreground text-right">{progress}% complété</p>
+                  <p className="text-xs text-muted-foreground text-right">{progress}% Terminé</p>
                 </div>
                 <Separator className="my-6" />
                 <nav className="space-y-2">

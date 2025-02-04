@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { Navigation } from '../../../components/landing/Navigation'
 import { Footer } from '../../../components/landing/Footer'
-import ProductDetails from '../../../components/product/ProductDetails'
+import ProductDetails from '../../../components/landing/ProductDetails'
 
 /**
  * Récupère les détails d'un produit depuis l'API
@@ -9,6 +9,7 @@ import ProductDetails from '../../../components/product/ProductDetails'
  * @returns {Promise<Object>} Détails du produit
  */
 async function getProduct(id) {
+  console.log('getProduct - ID:', id)
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products/${id}`,
     { cache: 'no-store' }
@@ -18,7 +19,9 @@ async function getProduct(id) {
     throw new Error('Failed to fetch product')
   }
 
-  return res.json()
+  const product = await res.json()
+  console.log('getProduct - Produit récupéré:', product)
+  return product
 }
 
 /**
@@ -27,7 +30,9 @@ async function getProduct(id) {
  * ses caractéristiques et les options d'achat
  */
 export default async function ProductPage({ params }) {
+  console.log('ProductPage - Params:', params)
   const product = await getProduct(params.id)
+  console.log('ProductPage - Produit:', product)
 
   return (
     <div className="flex flex-col min-h-screen">

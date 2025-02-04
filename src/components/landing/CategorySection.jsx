@@ -1,49 +1,21 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import Link from 'next/link'
-import { Button } from '../ui/button'
+import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-
-const fadeIn = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
-}
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { fetchCategories } from '@/utils/api'
 
 /**
  * Composant pour afficher la section des catégories.
  * Utilise un carousel horizontal avec des cercles colorés.
  */
 export function CategorySection() {
-  // États pour gérer les données et le chargement
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
-
-  // Chargement des catégories depuis l'API
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('/api/categories')
-        if (!response.ok) {
-          throw new Error('Failed to fetch categories')
-        }
-        const data = await response.json()
-        // S'assurer que data est un tableau
-        setCategories(Array.isArray(data) ? data : [])
-      } catch (error) {
-        console.error('Erreur lors du chargement des catégories:', error)
-        setCategories([])
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchCategories()
-  }, [])
-
   const scrollContainerRef = useRef(null)
 
   const scroll = (direction) => {
@@ -54,40 +26,70 @@ export function CategorySection() {
     }
   }
 
-  if (loading) return <div className="py-12 text-center">Chargement...</div>
+  useEffect(() => {
+    let isMounted = true
 
-  if (categories.length === 0) {
-    return <div className="py-12 text-center">Aucune catégorie disponible</div>
+    const loadCategories = async () => {
+      try {
+        const data = await fetchCategories()
+        if (isMounted) {
+          setCategories(data.slice(0, 8)) // On prend les 8 premières catégories
+        }
+      } catch (error) {
+        console.error('Erreur:', error)
+        toast.error("Impossible de charger les catégories")
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadCategories()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  if (loading) {
+    return (
+      <section className=" bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex overflow-x-auto gap-4 pb-4 px-2 scrollbar-hide">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="flex-none w-20">
+                <div className="flex flex-col items-center">
+                  <div className="w-16 h-16 rounded-full bg-gray-200 animate-pulse" />
+                  <div className="h-3 w-14 mt-2 bg-gray-200 rounded animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
   }
 
   return (
-    <section className="py-16 justify-center bg-gray-50">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Nos Catégories
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Découvrez notre sélection de produits frais et locaux, 
-            soigneusement classés par catégories pour faciliter vos achats.
+        <div className="text-center mb-10">
+          <h2 className="lg:text-3xl font-bold mb-4 text-xl">Nos Catégories</h2>
+          <p className="text-gray-600 max-w-2xl lg:text-md text-sm mx-auto">
+            Découvrez notre sélection de produits frais et locaux
           </p>
-        </motion.div>
+        </div>
 
         <div className="relative">
-          {/* Boutons de navigation */}
+          {/* Boutons de navigation (visibles uniquement sur desktop) */}
           <Button
             variant="ghost"
             size="icon"
             className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-lg hidden md:flex"
             onClick={() => scroll('left')}
           >
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-4 w-4" />
           </Button>
           
           <Button
@@ -96,40 +98,39 @@ export function CategorySection() {
             className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white shadow-lg hidden md:flex"
             onClick={() => scroll('right')}
           >
-            <ChevronRight className="h-6 w-6" />
+            <ChevronRight className="h-4 w-4" />
           </Button>
 
-          {/* Container des catégories */}
+          {/* Container avec scroll horizontal sur mobile */}
           <div 
             ref={scrollContainerRef}
-            className="flex gap-6 overflow-x-auto itemms-center justify-centersnap-x snap-mandatory pb-6 px-4 md:px-0 scrollbar-hide"
+            className="flex overflow-x-auto gap-4 pb-4 px-2 md:gap-6 md:px-0 md:flex-wrap md:justify-center scrollbar-hide"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
               WebkitOverflowScrolling: 'touch'
             }}
           >
-            {categories.map((category) => (
+            {categories.map((category, index) => (
               <motion.div
                 key={category.id}
-                variants={fadeIn}
-                initial="initial"
-                whileInView="animate"
-                viewport={{ once: true }}
-                className="flex-none w-[120px]"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="flex-none w-20 md:w-28 md:flex-initial"
               >
                 <Link href={`/categories/${category.id}`}>
                   <div className="flex flex-col items-center group">
-                    <div className="w-28 h-28 rounded-full bg-orange-100 shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 group-hover:scale-105 relative">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-orange-50 to-orange-100 shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 group-hover:scale-105 relative">
+                      <div className="absolute inset-0 bg-white/10 group-hover:bg-white/0 transition-colors" />
                       <Image
                         src={category.image_url}
                         alt={category.name}
                         fill
-                        className="object-contain rounded-full p-1"
-                        sizes="120px"
+                        className="object-cover p-0.5"
                       />
                     </div>
-                    <h3 className="mt-3 text-sm font-medium text-center text-gray-700 group-hover:text-orange-500 transition-colors">
+                    <h3 className="mt-2 md:mt-3 text-xs md:text-sm font-medium text-center text-gray-700 group-hover:text-orange-500 transition-colors line-clamp-2">
                       {category.name}
                     </h3>
                   </div>
@@ -137,6 +138,18 @@ export function CategorySection() {
               </motion.div>
             ))}
           </div>
+        </div>
+
+        <div className="text-center mt-10">
+          <Link href="/categories">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="text-sm bg-orange-500 text-white px-6 py-2.5 rounded-full font-medium hover:bg-orange-600 transition-colors shadow-md hover:shadow-lg"
+            >
+              Voir toutes les catégories
+            </motion.button>
+          </Link>
         </div>
       </div>
     </section>

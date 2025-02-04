@@ -5,26 +5,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Button } from '../ui/button'
 import { Badge } from '../ui/badge'
-import { Minus, Plus, ShoppingCart } from 'lucide-react'
-import { useCart } from '../../context/CartContext'
-
-const imageVariants = {
-  hidden: { opacity: 0, scale: 0.8 },
-  show: { 
-    opacity: 1, 
-    scale: 1,
-    transition: { duration: 0.5 }
-  }
-}
-
-const contentVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.5, delay: 0.2 }
-  }
-}
+import { useCart } from '@/context/CartContext'
 
 export function HeroProduct({ product }) {
   const [quantity, setQuantity] = useState(1)
@@ -45,6 +26,59 @@ export function HeroProduct({ product }) {
     addToCart(product, quantity)
   }
 
+  // Si pas de produit, afficher la bannière promotionnelle
+  if (!product) {
+    return (
+      <section className="relative bg-gradient-to-r from-[#126803] pt-28 to-green-700 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/dots.png')] opacity-10" />
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-8 items-center min-h-[40vh]">
+            {/* Texte promotionnel */}
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-white space-y-4"
+            >
+              <h1 className="text-3xl md:text-5xl font-bold">
+                Offres Spéciales <span className="text-orange-500">du Jour</span>
+              </h1>
+              <p className="text-lg md:text-xl text-white/90">
+                Découvrez notre sélection de produits frais à des prix imbattables.
+                Profitez de réductions exceptionnelles sur nos fruits et légumes de saison !
+              </p>
+              <div className="flex gap-4">
+                <Badge className="bg-orange-500 text-white hover:bg-orange-600 px-4 py-2 text-lg">
+                  -20%
+                </Badge>
+                <Badge className="bg-white text-green-700 px-4 py-2 text-lg">
+                  Offre Limitée
+                </Badge>
+              </div>
+            </motion.div>
+
+            {/* Image du panier */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="relative h-[300px] md:h-[400px]"
+            >
+              <Image
+                src="/basket.png"
+                alt="Panier de fruits frais"
+                fill
+                className="object-contain"
+                priority
+              />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Si un produit est fourni, afficher les détails du produit
   return (
     <section className="py-8 md:py-16 bg-white">
       <div className="container mx-auto px-4">
@@ -52,7 +86,14 @@ export function HeroProduct({ product }) {
           {/* Images Section */}
           <div className="w-full lg:w-1/2">
             <motion.div
-              variants={imageVariants}
+              variants={{
+                hidden: { opacity: 0, scale: 0.8 },
+                show: { 
+                  opacity: 1, 
+                  scale: 1,
+                  transition: { duration: 0.5 }
+                }
+              }}
               initial="hidden"
               animate="show"
               className="relative aspect-square rounded-lg overflow-hidden bg-gray-100"
@@ -75,7 +116,14 @@ export function HeroProduct({ product }) {
             {/* Thumbnails */}
             {product.images.length > 1 && (
               <motion.div 
-                variants={contentVariants}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  show: { 
+                    opacity: 1, 
+                    y: 0,
+                    transition: { duration: 0.5, delay: 0.2 }
+                  }
+                }}
                 initial="hidden"
                 animate="show"
                 className="grid grid-cols-4 gap-2 mt-4"
@@ -103,7 +151,14 @@ export function HeroProduct({ product }) {
 
           {/* Content Section */}
           <motion.div 
-            variants={contentVariants}
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              show: { 
+                opacity: 1, 
+                y: 0,
+                transition: { duration: 0.5, delay: 0.2 }
+              }
+            }}
             initial="hidden"
             animate="show"
             className="w-full lg:w-1/2 flex flex-col"

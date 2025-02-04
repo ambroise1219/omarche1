@@ -24,17 +24,17 @@ const faqs = [
 
 export function FAQSection() {
   return (
-    <section className="py-16">
+    <section className="py-8 md:py-16">
       <div className="container mx-auto px-4 max-w-3xl">
         <motion.h2 
-          className="text-3xl font-bold text-center mb-12"
+          className="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-12"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
         >
           Questions fréquentes
         </motion.h2>
-        <Accordion type="single" collapsible className="w-full">
+        <Accordion type="single" collapsible className="w-full space-y-2 md:space-y-4">
           {faqs.map((faq, index) => (
             <motion.div
               key={index}
@@ -43,11 +43,11 @@ export function FAQSection() {
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <AccordionItem value={`item-${index + 1}`}>
-                <AccordionTrigger className="text-left">
+              <AccordionItem value={`item-${index + 1}`} className="border rounded-lg bg-white shadow-sm">
+                <AccordionTrigger className="text-left px-4 py-3 md:py-4 text-sm md:text-base font-medium hover:no-underline">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent>
+                <AccordionContent className="px-4 pb-3 md:pb-4 text-sm md:text-base text-gray-600">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

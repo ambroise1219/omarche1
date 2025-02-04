@@ -6,6 +6,7 @@ import { Navigation } from '../../components/landing/Navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import { Footer } from '@/components/landing/Footer'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -56,13 +57,14 @@ export default function CategoriesPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-custom-green to-custom-green/90">
         <Navigation />
-        <main className="container mx-auto px-4 pt-32 pb-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="relative h-64 rounded-xl overflow-hidden animate-pulse bg-white/10" />
+        <main className="container mx-auto px-4 pt-24 md:pt-32 pb-16">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="relative h-40 md:h-64 rounded-lg md:rounded-xl overflow-hidden animate-pulse bg-white/10" />
             ))}
           </div>
         </main>
+        <Footer />
       </div>
     )
   }
@@ -71,17 +73,17 @@ export default function CategoriesPage() {
     <div className="min-h-screen bg-gradient-to-br from-custom-green to-custom-green/90">
       <Navigation />
       
-      <main className="container mx-auto px-4 pt-32 pb-16">
+      <main className="container mx-auto px-4 pt-24 md:pt-32 pb-16">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-8 md:mb-12"
         >
-          <h1 className="font-paytone font-bold text-4xl md:text-5xl text-white mb-4">
+          <h1 className="font-paytone font-bold text-2xl md:text-4xl lg:text-5xl text-white mb-2 md:mb-4">
             Nos Catégories
           </h1>
-          <p className="text-white/80 text-lg max-w-2xl mx-auto">
-            Découvrez notre sélection de produits frais et locaux, soigneusement classés par catégories pour faciliter votre shopping
+          <p className="text-white/80 text-sm md:text-lg max-w-2xl mx-auto">
+            Découvrez notre sélection de produits frais et locaux
           </p>
         </motion.div>
 
@@ -89,7 +91,7 @@ export default function CategoriesPage() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6"
         >
           {categories.map((category) => (
             <motion.div
@@ -99,7 +101,7 @@ export default function CategoriesPage() {
               className="group relative"
             >
               <Link href={`/categories/${category.id}`}>
-                <div className="relative h-64 rounded-xl overflow-hidden">
+                <div className="relative h-40 md:h-64 rounded-lg md:rounded-xl overflow-hidden">
                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors z-10" />
                   <Image
                     src={category.image_url}
@@ -107,12 +109,12 @@ export default function CategoriesPage() {
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 z-20 p-6 flex flex-col justify-between">
-                    <h2 className="font-paytone text-2xl text-white">
+                  <div className="absolute inset-0 z-20 p-3 md:p-6 flex flex-col justify-between">
+                    <h2 className="font-paytone text-base md:text-2xl text-white">
                       {category.name}
                     </h2>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg py-2 px-4 self-start">
-                      <span className="text-white">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-md md:rounded-lg py-1.5 md:py-2 px-2 md:px-4 self-start">
+                      <span className="text-white text-xs md:text-sm line-clamp-2">
                         {category.description}
                       </span>
                     </div>

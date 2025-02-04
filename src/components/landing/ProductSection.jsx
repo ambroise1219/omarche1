@@ -27,6 +27,7 @@ import {
 } from "../ui/sheet"
 import Link from 'next/link'
 import { useCart } from '../../context/CartContext'
+import { fetchProducts, fetchCategories } from '@/utils/api'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -57,31 +58,34 @@ export function ProductSection() {
   })
 
   useEffect(() => {
-    const fetchData = async () => {
+    let isMounted = true
+
+    const loadData = async () => {
       try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          fetch('/api/products'),
-          fetch('/api/categories')
-        ])
-        
         const [productsData, categoriesData] = await Promise.all([
-          productsRes.json(),
-          categoriesRes.json()
+          fetchProducts(),
+          fetchCategories()
         ])
 
-        setProducts(productsData)
-        setCategories([
-          { id: 'all', name: 'Toutes les catégories' },
-          ...categoriesData
-        ])
-      } catch (error) {
-        console.error('Erreur lors du chargement des données:', error)
+        if (isMounted) {
+          setProducts(productsData)
+          setCategories([
+            { id: 'all', name: 'Toutes les catégories' },
+            ...categoriesData
+          ])
+        }
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
 
-    fetchData()
+    loadData()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   const filteredProducts = products

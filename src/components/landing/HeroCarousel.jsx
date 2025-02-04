@@ -11,9 +11,9 @@ import { motion } from 'framer-motion'
 // Composants pour les éléments décoratifs
 const FloatingElements = () => (
   <>
-    {/* Images flottantes */}
+    {/* Images flottantes - Masquées sur mobile, visibles sur desktop */}
     <motion.div
-      className="absolute -top-10 -right-10 w-32 h-32 z-10 rotate-12"
+      className="absolute -top-10 -right-10 w-24 md:w-32 h-24 md:h-32 z-10 rotate-12 hidden md:block"
       animate={{
         y: [0, -20, 0],
         rotate: [12, -12, 12],
@@ -35,7 +35,7 @@ const FloatingElements = () => (
     </motion.div>
 
     <motion.div
-      className="absolute bottom-20 -left-10 w-40 h-40 z-10 -rotate-12"
+      className="absolute bottom-20 -left-10 w-32 md:w-40 h-32 md:h-40 z-10 -rotate-12 hidden md:block"
       animate={{
         y: [0, 20, 0],
         rotate: [-12, 12, -12],
@@ -58,7 +58,7 @@ const FloatingElements = () => (
     </motion.div>
 
     <motion.div
-      className="absolute top-1/3 -right-5 w-24 h-24 z-10 rotate-45"
+      className="absolute top-1/3 -right-5 w-20 md:w-24 h-20 md:h-24 z-10 rotate-45 hidden md:block"
       animate={{
         x: [0, 20, 0],
         rotate: [45, -45, 45],
@@ -81,9 +81,9 @@ const FloatingElements = () => (
     </motion.div>
 
     <motion.div
-      className="absolute bottom-1/3 left-1/3 w-20 h-20 z-10 -rotate-90"
+      className="absolute bottom-1/3 left-1/3 w-16 md:w-20 h-16 md:h-20 z-10 -rotate-90 hidden md:block"
       animate={{
-        y: [70,  74, 40],
+        y: [70, 74, 40],
         rotate: [-90, 0, -90],
         scale: [1, 1.1, 1],
       }}
@@ -103,12 +103,12 @@ const FloatingElements = () => (
       />
     </motion.div>
 
-    {/* Points flottants */}
+    {/* Points flottants - Réduits sur mobile */}
     <div className="absolute inset-0 overflow-hidden">
-      {[...Array(15)].map((_, i) => (
+      {[...Array(10)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-2 h-2 rounded-full bg-orange-200 opacity-20"
+          className="absolute w-1.5 md:w-2 h-1.5 md:h-2 rounded-full bg-orange-200 opacity-20"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
@@ -183,80 +183,96 @@ export function HeroCarousel() {
   }, [emblaApi])
 
   return (
-    <section className="relative min-h-screen font-outfit overflow-hidden">
+    <section className="relative min-h-[50svh] md:min-h-[80vh] font-outfit overflow-hidden">
       {/* Éléments décoratifs en arrière-plan */}
       <FloatingElements />
 
-      <div className="embla overflow-hidden h-screen" ref={emblaRef}>
+      <div className="embla overflow-hidden h-[60svh] md:h-[80vh] " ref={emblaRef}>
         <div className="embla__container flex h-full">
           {slides.map((slide) => (
             <div 
               key={slide.id} 
               className={`embla__slide flex-[0_0_100%] min-w-0 relative ${slide.bgColor}`}
             >
-              <div className="container mx-auto px-4 h-screen flex items-center">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center pt-24">
+              <div className="container mx-auto px-4 h-full flex items-center">
+                <div className="grid grid-cols-2 gap-2 md:gap-10 items-center pt-8 md:pt-24">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="space-y-6 relative z-20"
+                    transition={{ duration: 0.6 }}
+                    className="text-left space-y-2 md:space-y-6"
                   >
-                    <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold leading-tight ${slide.textColor}`}>
+                    <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold leading-tight">
                       {slide.title}
                     </h1>
-                    <p className="text-lg md:text-xl text-gray-600 max-w-lg">
+                    <p className="text-xs md:text-lg text-gray-600 max-w-xl lg:mx-0 line-clamp-2 md:line-clamp-none">
                       {slide.description}
                     </p>
-                    <div className="pt-4">
-                      <Link href="/products">
-                        <Button size="lg" className="bg-orange-600 text-white hover:bg-orange-700 group">
+                    {/* Bouton desktop */}
+                    <div className="hidden md:block">
+                      <Button 
+                        size="sm"
+                        className={`${slide.textColor} bg-[#227313] py-2 hover:bg-green-900 text-white flex-row text-xs md:text-base`}
+                        asChild
+                      >
+                        <Link href="/produits">
                           {slide.cta}
-                          <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                        </Button>
-                      </Link>
+                        </Link>
+                        <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5 inline-block" />
+                      </Button>
+                    
+                    </div>
+                    {/* Bouton mobile */}
+                    <div className="block md:hidden">
+                      <Button 
+                        size="sm"
+                        className={`${slide.textColor} bg-[#227313] w-full py-2 hover:bg-green-900 text-white text-xs`}
+                        asChild
+                      >
+                        <Link href="/produits">
+                          {slide.cta}
+                        </Link>
+                        <ArrowRight className="ml-2 h-4 w-4 inline-block" />
+                      </Button>
+                    
                     </div>
                   </motion.div>
-                  
+
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
+                    initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                    className="relative hidden lg:block z-20"
+                    transition={{ duration: 0.6 }}
+                    className="relative h-32 md:h-[400px] lg:h-[500px]"
                   >
-                    <div className="relative">
-                      <div className={`absolute -inset-4 ${slide.bgColor} rounded-full blur-3xl opacity-50`} />
-                      <Image
-                        src={slide.image}
-                        alt={slide.title}
-                        width={600}
-                        height={600}
-                        className="object-contain relative z-10"
-                        priority
-                      />
-                    </div>
+                    <Image
+                      src={slide.image}
+                      alt={slide.title}
+                      fill
+                      className="object-contain"
+                      priority
+                    />
                   </motion.div>
                 </div>
               </div>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Indicateurs de slide */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-        {slides.map((slide, index) => (
-          <button
-            key={slide.id}
-            onClick={() => emblaApi?.scrollTo(index)}
-            className={`w-3 h-3 rounded-full transition-colors ${
-              currentSlide === index 
-                ? 'bg-orange-600' 
-                : 'bg-orange-200 hover:bg-orange-300'
-            }`}
-            aria-label={`Aller au slide ${index + 1}`}
-          />
-        ))}
+        {/* Indicateurs de slide */}
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => emblaApi?.scrollTo(index)}
+              className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all ${
+                currentSlide === index 
+                  ? 'bg-orange-500 w-4 md:w-6' 
+                  : 'bg-orange-200'
+              }`}
+              aria-label={`Aller à la slide ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   )

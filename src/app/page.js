@@ -35,7 +35,7 @@ export default function HomePage() {
       <Navigation />
 
       {/* Hero Section */}
-      <div className="min-h-[80vh]">
+      <div >
         <HeroCarousel />
       </div>
 
