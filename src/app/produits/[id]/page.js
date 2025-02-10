@@ -1,52 +1,67 @@
-import { Suspense } from 'react'
-import { Navigation } from '../../../components/landing/Navigation'
-import { Footer } from '../../../components/landing/Footer'
-import ProductDetails from '../../../components/landing/ProductDetails'
+'use client'
 
-/**
- * Récupère les détails d'un produit depuis l'API
- * @param {string} id - Identifiant du produit
- * @returns {Promise<Object>} Détails du produit
- */
-async function getProduct(id) {
-  console.log('getProduct - ID:', id)
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products/${id}`,
-    { cache: 'no-store' }
-  )
-  
-  if (!res.ok) {
-    throw new Error('Failed to fetch product')
-  }
-
-  const product = await res.json()
-  console.log('getProduct - Produit récupéré:', product)
-  return product
-}
+import { useState, useEffect } from 'react'
+import ProductDetails from '@/components/landing/ProductDetails'
+import { Navigation } from '@/components/landing/Navigation'
+import { Footer } from '@/components/landing/Footer'
+import { fetchProductById } from '@/utils/api'
+import { Skeleton } from '@/components/ui/skeleton'
 
 /**
  * Page de détails d'un produit
  * Affiche les informations complètes d'un produit avec son carousel d'images,
  * ses caractéristiques et les options d'achat
  */
-export default async function ProductPage({ params }) {
-  console.log('ProductPage - Params:', params)
-  const product = await getProduct(params.id)
-  console.log('ProductPage - Produit:', product)
+export default function ProductPage({ params }) {
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadProduct = async () => {
+      try {
+        const data = await fetchProductById(params.id)
+        if (isMounted && data) {
+          setProduct(data)
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadProduct()
+
+    return () => {
+      isMounted = false
+    }
+  }, [params.id])
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <>
       <Navigation />
-      <main className="flex-grow">
-        <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-500" />
+      <main className="min-h-screen">
+        {loading ? (
+          <div className="space-y-8 p-8">
+            <Skeleton className="h-[400px] w-full" />
+            <div className="grid lg:grid-cols-2 gap-8">
+              <Skeleton className="h-[300px]" />
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-3/4" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-12 w-1/3" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            </div>
           </div>
-        }>
+        ) : (
           <ProductDetails product={product} />
-        </Suspense>
+        )}
       </main>
       <Footer />
-    </div>
+    </>
   )
 }

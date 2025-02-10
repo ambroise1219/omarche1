@@ -72,3 +72,51 @@ export async function fetchProducts() {
     return []
   }
 }
+
+/**
+ * Fonction pour charger un produit spécifique par son ID
+ * @param {string} id - ID du produit
+ * @returns {Promise<Object>} Détails du produit
+ */
+export async function fetchProductById(id) {
+  try {
+    const data = await fetchWithRetry(`/api/products/${id}`)
+    return data
+  } catch (error) {
+    console.error('Erreur lors du chargement du produit:', error)
+    toast.error("Impossible de charger les détails du produit")
+    return null
+  }
+}
+
+/**
+ * Fonction pour charger une catégorie spécifique par son ID
+ * @param {string} id - ID de la catégorie
+ * @returns {Promise<Object>} Détails de la catégorie
+ */
+export async function fetchCategoryById(id) {
+  try {
+    const data = await fetchWithRetry(`/api/categories/${id}`)
+    return data
+  } catch (error) {
+    console.error('Erreur lors du chargement de la catégorie:', error)
+    toast.error("Impossible de charger les détails de la catégorie")
+    return null
+  }
+}
+
+/**
+ * Fonction pour charger les produits d'une catégorie spécifique
+ * @param {string} categoryId - ID de la catégorie
+ * @returns {Promise<Array>} Liste des produits de la catégorie
+ */
+export async function fetchProductsByCategory(categoryId) {
+  try {
+    const data = await fetchWithRetry(`/api/categories/${categoryId}/products`)
+    return data
+  } catch (error) {
+    console.error('Erreur lors du chargement des produits de la catégorie:', error)
+    toast.error("Impossible de charger les produits de cette catégorie")
+    return []
+  }
+}

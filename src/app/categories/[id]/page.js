@@ -4,54 +4,18 @@ import { Footer } from '../../../components/landing/Footer'
 import HeroCategory from '../../../components/category/HeroCategory'
 import CategoryProductCard from '../../../components/category/CategoryProductCard'
 import { notFound } from 'next/navigation'
+import { fetchCategoryById, fetchProductsByCategory } from '@/utils/api'
 
 async function getCategory(id) {
   try {
-    // Récupérer les détails de la catégorie
-    const categoryResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/categories/${id}`,
-      { 
-        cache: 'no-store',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-    
-    if (!categoryResponse.ok) {
-      if (categoryResponse.status === 404) {
-        notFound()
-      }
-      throw new Error('Failed to fetch category')
-    }
-    
-    const categoryData = await categoryResponse.json()
-
-    // Récupérer tous les produits
-    const productsResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/products`,
-      { 
-        cache: 'no-store',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-
-    if (!productsResponse.ok) {
-      throw new Error('Failed to fetch products')
-    }
-
-    const productsData = await productsResponse.json()
-
-    // Filtrer les produits par category_id
-    const categoryProducts = productsData.filter(
-      product => product.category_id === id
-    )
+    const [categoryData, productsData] = await Promise.all([
+      fetchCategoryById(id),
+      fetchProductsByCategory(id)
+    ])
 
     return {
       ...categoryData,
-      products: categoryProducts
+      products: productsData
     }
   } catch (error) {
     console.error('Error fetching category:', error)

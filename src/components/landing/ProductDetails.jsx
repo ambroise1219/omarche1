@@ -14,6 +14,22 @@ export default function ProductDetails({ product }) {
   const [quantity, setQuantity] = useState(1)
   const { addToCart } = useCart()
 
+  if (!product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Produit non trouvé</h1>
+          <Button
+            onClick={() => window.history.back()}
+            className="bg-orange-500 hover:bg-orange-600"
+          >
+            Retourner aux produits
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   const handleAddToCart = () => {
     addToCart(product, quantity)
   }
@@ -21,7 +37,7 @@ export default function ProductDetails({ product }) {
   return (
     <div className="w-full">
       {/* Hero Banner */}
-      <HeroProduct />
+      <HeroProduct images={product?.images || []} />
 
       {/* Contenu principal */}
       <section className="py-16">

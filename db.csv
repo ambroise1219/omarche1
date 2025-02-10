@@ -1,0 +1,458 @@
+table_name,table_type,column_name,data_type,character_maximum_length,column_default,is_nullable,constraint_name,constraint_type,key_column,foreign_table_name,foreign_column_name
+banners,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_448_3_not_null,CHECK,null,null,null
+banners,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_448_2_not_null,CHECK,null,null,null
+banners,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_448_1_not_null,CHECK,null,null,null
+banners,BASE TABLE,id,bigint,null,unique_rowid(),NO,banners_pkey,PRIMARY KEY,id,banners,id
+banners,BASE TABLE,title,character varying,100,null,NO,banners_pkey,PRIMARY KEY,id,banners,id
+banners,BASE TABLE,title,character varying,100,null,NO,439_448_3_not_null,CHECK,null,null,null
+banners,BASE TABLE,title,character varying,100,null,NO,439_448_2_not_null,CHECK,null,null,null
+banners,BASE TABLE,title,character varying,100,null,NO,439_448_1_not_null,CHECK,null,null,null
+banners,BASE TABLE,image_url,character varying,255,null,NO,439_448_2_not_null,CHECK,null,null,null
+banners,BASE TABLE,image_url,character varying,255,null,NO,439_448_1_not_null,CHECK,null,null,null
+banners,BASE TABLE,image_url,character varying,255,null,NO,439_448_3_not_null,CHECK,null,null,null
+banners,BASE TABLE,image_url,character varying,255,null,NO,banners_pkey,PRIMARY KEY,id,banners,id
+banners,BASE TABLE,link,character varying,255,null,YES,banners_pkey,PRIMARY KEY,id,banners,id
+banners,BASE TABLE,link,character varying,255,null,YES,439_448_3_not_null,CHECK,null,null,null
+banners,BASE TABLE,link,character varying,255,null,YES,439_448_2_not_null,CHECK,null,null,null
+banners,BASE TABLE,link,character varying,255,null,YES,439_448_1_not_null,CHECK,null,null,null
+banners,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,banners_pkey,PRIMARY KEY,id,banners,id
+banners,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_448_3_not_null,CHECK,null,null,null
+banners,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_448_2_not_null,CHECK,null,null,null
+banners,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_448_1_not_null,CHECK,null,null,null
+cart_items,BASE TABLE,id,bigint,null,unique_rowid(),NO,cart_items_user_id_product_id_key,UNIQUE,user_id,cart_items,user_id
+cart_items,BASE TABLE,id,bigint,null,unique_rowid(),NO,cart_items_user_id_fkey,FOREIGN KEY,user_id,users,id
+cart_items,BASE TABLE,id,bigint,null,unique_rowid(),NO,cart_items_pkey,PRIMARY KEY,id,cart_items,id
+cart_items,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_453_4_not_null,CHECK,null,null,null
+cart_items,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_453_1_not_null,CHECK,null,null,null
+cart_items,BASE TABLE,id,bigint,null,unique_rowid(),NO,check_quantity,CHECK,null,cart_items,quantity
+cart_items,BASE TABLE,id,bigint,null,unique_rowid(),NO,cart_items_product_id_fkey,FOREIGN KEY,product_id,products,id
+cart_items,BASE TABLE,id,bigint,null,unique_rowid(),NO,cart_items_user_id_product_id_key,UNIQUE,product_id,cart_items,product_id
+cart_items,BASE TABLE,id,bigint,null,unique_rowid(),NO,cart_items_user_id_product_id_key,UNIQUE,product_id,cart_items,user_id
+cart_items,BASE TABLE,id,bigint,null,unique_rowid(),NO,cart_items_user_id_product_id_key,UNIQUE,user_id,cart_items,product_id
+cart_items,BASE TABLE,user_id,bigint,null,null,YES,cart_items_user_id_product_id_key,UNIQUE,user_id,cart_items,product_id
+cart_items,BASE TABLE,user_id,bigint,null,null,YES,cart_items_pkey,PRIMARY KEY,id,cart_items,id
+cart_items,BASE TABLE,user_id,bigint,null,null,YES,cart_items_user_id_product_id_key,UNIQUE,user_id,cart_items,user_id
+cart_items,BASE TABLE,user_id,bigint,null,null,YES,cart_items_user_id_product_id_key,UNIQUE,product_id,cart_items,user_id
+cart_items,BASE TABLE,user_id,bigint,null,null,YES,cart_items_user_id_product_id_key,UNIQUE,product_id,cart_items,product_id
+cart_items,BASE TABLE,user_id,bigint,null,null,YES,cart_items_user_id_fkey,FOREIGN KEY,user_id,users,id
+cart_items,BASE TABLE,user_id,bigint,null,null,YES,cart_items_product_id_fkey,FOREIGN KEY,product_id,products,id
+cart_items,BASE TABLE,user_id,bigint,null,null,YES,check_quantity,CHECK,null,cart_items,quantity
+cart_items,BASE TABLE,user_id,bigint,null,null,YES,439_453_1_not_null,CHECK,null,null,null
+cart_items,BASE TABLE,user_id,bigint,null,null,YES,439_453_4_not_null,CHECK,null,null,null
+cart_items,BASE TABLE,product_id,bigint,null,null,YES,cart_items_user_id_product_id_key,UNIQUE,product_id,cart_items,user_id
+cart_items,BASE TABLE,product_id,bigint,null,null,YES,cart_items_user_id_product_id_key,UNIQUE,user_id,cart_items,product_id
+cart_items,BASE TABLE,product_id,bigint,null,null,YES,439_453_4_not_null,CHECK,null,null,null
+cart_items,BASE TABLE,product_id,bigint,null,null,YES,439_453_1_not_null,CHECK,null,null,null
+cart_items,BASE TABLE,product_id,bigint,null,null,YES,check_quantity,CHECK,null,cart_items,quantity
+cart_items,BASE TABLE,product_id,bigint,null,null,YES,cart_items_user_id_product_id_key,UNIQUE,user_id,cart_items,user_id
+cart_items,BASE TABLE,product_id,bigint,null,null,YES,cart_items_product_id_fkey,FOREIGN KEY,product_id,products,id
+cart_items,BASE TABLE,product_id,bigint,null,null,YES,cart_items_user_id_fkey,FOREIGN KEY,user_id,users,id
+cart_items,BASE TABLE,product_id,bigint,null,null,YES,cart_items_user_id_product_id_key,UNIQUE,product_id,cart_items,product_id
+cart_items,BASE TABLE,product_id,bigint,null,null,YES,cart_items_pkey,PRIMARY KEY,id,cart_items,id
+cart_items,BASE TABLE,quantity,bigint,null,null,NO,cart_items_user_id_fkey,FOREIGN KEY,user_id,users,id
+cart_items,BASE TABLE,quantity,bigint,null,null,NO,cart_items_user_id_product_id_key,UNIQUE,user_id,cart_items,user_id
+cart_items,BASE TABLE,quantity,bigint,null,null,NO,439_453_4_not_null,CHECK,null,null,null
+cart_items,BASE TABLE,quantity,bigint,null,null,NO,439_453_1_not_null,CHECK,null,null,null
+cart_items,BASE TABLE,quantity,bigint,null,null,NO,cart_items_product_id_fkey,FOREIGN KEY,product_id,products,id
+cart_items,BASE TABLE,quantity,bigint,null,null,NO,check_quantity,CHECK,null,cart_items,quantity
+cart_items,BASE TABLE,quantity,bigint,null,null,NO,cart_items_user_id_product_id_key,UNIQUE,product_id,cart_items,product_id
+cart_items,BASE TABLE,quantity,bigint,null,null,NO,cart_items_user_id_product_id_key,UNIQUE,product_id,cart_items,user_id
+cart_items,BASE TABLE,quantity,bigint,null,null,NO,cart_items_user_id_product_id_key,UNIQUE,user_id,cart_items,product_id
+cart_items,BASE TABLE,quantity,bigint,null,null,NO,cart_items_pkey,PRIMARY KEY,id,cart_items,id
+cart_items,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,cart_items_pkey,PRIMARY KEY,id,cart_items,id
+cart_items,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_453_4_not_null,CHECK,null,null,null
+cart_items,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_453_1_not_null,CHECK,null,null,null
+cart_items,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,check_quantity,CHECK,null,cart_items,quantity
+cart_items,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,cart_items_product_id_fkey,FOREIGN KEY,product_id,products,id
+cart_items,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,cart_items_user_id_fkey,FOREIGN KEY,user_id,users,id
+cart_items,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,cart_items_user_id_product_id_key,UNIQUE,product_id,cart_items,product_id
+cart_items,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,cart_items_user_id_product_id_key,UNIQUE,product_id,cart_items,user_id
+cart_items,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,cart_items_user_id_product_id_key,UNIQUE,user_id,cart_items,product_id
+cart_items,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,cart_items_user_id_product_id_key,UNIQUE,user_id,cart_items,user_id
+categories,BASE TABLE,id,bigint,null,unique_rowid(),NO,categories_pkey,PRIMARY KEY,id,categories,id
+categories,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_443_2_not_null,CHECK,null,null,null
+categories,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_443_1_not_null,CHECK,null,null,null
+categories,BASE TABLE,name,character varying,100,null,NO,categories_pkey,PRIMARY KEY,id,categories,id
+categories,BASE TABLE,name,character varying,100,null,NO,439_443_2_not_null,CHECK,null,null,null
+categories,BASE TABLE,name,character varying,100,null,NO,439_443_1_not_null,CHECK,null,null,null
+categories,BASE TABLE,description,text,null,null,YES,categories_pkey,PRIMARY KEY,id,categories,id
+categories,BASE TABLE,description,text,null,null,YES,439_443_1_not_null,CHECK,null,null,null
+categories,BASE TABLE,description,text,null,null,YES,439_443_2_not_null,CHECK,null,null,null
+categories,BASE TABLE,image_url,character varying,255,null,YES,439_443_2_not_null,CHECK,null,null,null
+categories,BASE TABLE,image_url,character varying,255,null,YES,categories_pkey,PRIMARY KEY,id,categories,id
+categories,BASE TABLE,image_url,character varying,255,null,YES,439_443_1_not_null,CHECK,null,null,null
+categories,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,categories_pkey,PRIMARY KEY,id,categories,id
+categories,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_443_2_not_null,CHECK,null,null,null
+categories,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_443_1_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_450_1_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,id,bigint,null,unique_rowid(),NO,deliveries_delivery_person_id_fkey,FOREIGN KEY,delivery_person_id,users,id
+deliveries,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_450_4_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,id,bigint,null,unique_rowid(),NO,deliveries_order_id_fkey,FOREIGN KEY,order_id,orders,id
+deliveries,BASE TABLE,id,bigint,null,unique_rowid(),NO,deliveries_pkey,PRIMARY KEY,id,deliveries,id
+deliveries,BASE TABLE,order_id,bigint,null,null,YES,deliveries_pkey,PRIMARY KEY,id,deliveries,id
+deliveries,BASE TABLE,order_id,bigint,null,null,YES,deliveries_order_id_fkey,FOREIGN KEY,order_id,orders,id
+deliveries,BASE TABLE,order_id,bigint,null,null,YES,deliveries_delivery_person_id_fkey,FOREIGN KEY,delivery_person_id,users,id
+deliveries,BASE TABLE,order_id,bigint,null,null,YES,439_450_1_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,order_id,bigint,null,null,YES,439_450_4_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,delivery_person_id,bigint,null,null,YES,deliveries_delivery_person_id_fkey,FOREIGN KEY,delivery_person_id,users,id
+deliveries,BASE TABLE,delivery_person_id,bigint,null,null,YES,439_450_4_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,delivery_person_id,bigint,null,null,YES,deliveries_pkey,PRIMARY KEY,id,deliveries,id
+deliveries,BASE TABLE,delivery_person_id,bigint,null,null,YES,439_450_1_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,delivery_person_id,bigint,null,null,YES,deliveries_order_id_fkey,FOREIGN KEY,order_id,orders,id
+deliveries,BASE TABLE,status,character varying,20,null,NO,439_450_4_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,status,character varying,20,null,NO,deliveries_delivery_person_id_fkey,FOREIGN KEY,delivery_person_id,users,id
+deliveries,BASE TABLE,status,character varying,20,null,NO,deliveries_order_id_fkey,FOREIGN KEY,order_id,orders,id
+deliveries,BASE TABLE,status,character varying,20,null,NO,439_450_1_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,status,character varying,20,null,NO,deliveries_pkey,PRIMARY KEY,id,deliveries,id
+deliveries,BASE TABLE,latitude,numeric,null,null,YES,439_450_4_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,latitude,numeric,null,null,YES,deliveries_order_id_fkey,FOREIGN KEY,order_id,orders,id
+deliveries,BASE TABLE,latitude,numeric,null,null,YES,deliveries_pkey,PRIMARY KEY,id,deliveries,id
+deliveries,BASE TABLE,latitude,numeric,null,null,YES,439_450_1_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,latitude,numeric,null,null,YES,deliveries_delivery_person_id_fkey,FOREIGN KEY,delivery_person_id,users,id
+deliveries,BASE TABLE,longitude,numeric,null,null,YES,439_450_1_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,longitude,numeric,null,null,YES,deliveries_order_id_fkey,FOREIGN KEY,order_id,orders,id
+deliveries,BASE TABLE,longitude,numeric,null,null,YES,deliveries_delivery_person_id_fkey,FOREIGN KEY,delivery_person_id,users,id
+deliveries,BASE TABLE,longitude,numeric,null,null,YES,439_450_4_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,longitude,numeric,null,null,YES,deliveries_pkey,PRIMARY KEY,id,deliveries,id
+deliveries,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,deliveries_order_id_fkey,FOREIGN KEY,order_id,orders,id
+deliveries,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,deliveries_delivery_person_id_fkey,FOREIGN KEY,delivery_person_id,users,id
+deliveries,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_450_1_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_450_4_not_null,CHECK,null,null,null
+deliveries,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,deliveries_pkey,PRIMARY KEY,id,deliveries,id
+delivery_positions,BASE TABLE,id,bigint,null,unique_rowid(),NO,delivery_positions_delivery_id_fkey,FOREIGN KEY,delivery_id,deliveries,id
+delivery_positions,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_451_3_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_451_1_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,id,bigint,null,unique_rowid(),NO,delivery_positions_pkey,PRIMARY KEY,id,delivery_positions,id
+delivery_positions,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_451_4_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,delivery_id,bigint,null,null,YES,439_451_4_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,delivery_id,bigint,null,null,YES,delivery_positions_pkey,PRIMARY KEY,id,delivery_positions,id
+delivery_positions,BASE TABLE,delivery_id,bigint,null,null,YES,439_451_3_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,delivery_id,bigint,null,null,YES,439_451_1_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,delivery_id,bigint,null,null,YES,delivery_positions_delivery_id_fkey,FOREIGN KEY,delivery_id,deliveries,id
+delivery_positions,BASE TABLE,latitude,numeric,null,null,NO,delivery_positions_pkey,PRIMARY KEY,id,delivery_positions,id
+delivery_positions,BASE TABLE,latitude,numeric,null,null,NO,439_451_4_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,latitude,numeric,null,null,NO,439_451_1_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,latitude,numeric,null,null,NO,439_451_3_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,latitude,numeric,null,null,NO,delivery_positions_delivery_id_fkey,FOREIGN KEY,delivery_id,deliveries,id
+delivery_positions,BASE TABLE,longitude,numeric,null,null,NO,439_451_3_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,longitude,numeric,null,null,NO,439_451_4_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,longitude,numeric,null,null,NO,delivery_positions_pkey,PRIMARY KEY,id,delivery_positions,id
+delivery_positions,BASE TABLE,longitude,numeric,null,null,NO,439_451_1_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,longitude,numeric,null,null,NO,delivery_positions_delivery_id_fkey,FOREIGN KEY,delivery_id,deliveries,id
+delivery_positions,BASE TABLE,timestamp,timestamp without time zone,null,current_timestamp(),YES,delivery_positions_pkey,PRIMARY KEY,id,delivery_positions,id
+delivery_positions,BASE TABLE,timestamp,timestamp without time zone,null,current_timestamp(),YES,439_451_4_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,timestamp,timestamp without time zone,null,current_timestamp(),YES,439_451_3_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,timestamp,timestamp without time zone,null,current_timestamp(),YES,439_451_1_not_null,CHECK,null,null,null
+delivery_positions,BASE TABLE,timestamp,timestamp without time zone,null,current_timestamp(),YES,delivery_positions_delivery_id_fkey,FOREIGN KEY,delivery_id,deliveries,id
+favorites,BASE TABLE,id,bigint,null,unique_rowid(),NO,favorites_pkey,PRIMARY KEY,id,favorites,id
+favorites,BASE TABLE,id,bigint,null,unique_rowid(),NO,favorites_user_id_product_id_key,UNIQUE,user_id,favorites,user_id
+favorites,BASE TABLE,id,bigint,null,unique_rowid(),NO,favorites_user_id_product_id_key,UNIQUE,user_id,favorites,product_id
+favorites,BASE TABLE,id,bigint,null,unique_rowid(),NO,favorites_user_id_product_id_key,UNIQUE,product_id,favorites,user_id
+favorites,BASE TABLE,id,bigint,null,unique_rowid(),NO,favorites_user_id_product_id_key,UNIQUE,product_id,favorites,product_id
+favorites,BASE TABLE,id,bigint,null,unique_rowid(),NO,favorites_user_id_fkey,FOREIGN KEY,user_id,users,id
+favorites,BASE TABLE,id,bigint,null,unique_rowid(),NO,favorites_product_id_fkey,FOREIGN KEY,product_id,products,id
+favorites,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_452_1_not_null,CHECK,null,null,null
+favorites,BASE TABLE,user_id,bigint,null,null,YES,favorites_user_id_product_id_key,UNIQUE,product_id,favorites,user_id
+favorites,BASE TABLE,user_id,bigint,null,null,YES,favorites_user_id_product_id_key,UNIQUE,user_id,favorites,user_id
+favorites,BASE TABLE,user_id,bigint,null,null,YES,favorites_user_id_product_id_key,UNIQUE,user_id,favorites,product_id
+favorites,BASE TABLE,user_id,bigint,null,null,YES,favorites_user_id_product_id_key,UNIQUE,product_id,favorites,product_id
+favorites,BASE TABLE,user_id,bigint,null,null,YES,favorites_user_id_fkey,FOREIGN KEY,user_id,users,id
+favorites,BASE TABLE,user_id,bigint,null,null,YES,favorites_product_id_fkey,FOREIGN KEY,product_id,products,id
+favorites,BASE TABLE,user_id,bigint,null,null,YES,439_452_1_not_null,CHECK,null,null,null
+favorites,BASE TABLE,user_id,bigint,null,null,YES,favorites_pkey,PRIMARY KEY,id,favorites,id
+favorites,BASE TABLE,product_id,bigint,null,null,YES,favorites_product_id_fkey,FOREIGN KEY,product_id,products,id
+favorites,BASE TABLE,product_id,bigint,null,null,YES,favorites_pkey,PRIMARY KEY,id,favorites,id
+favorites,BASE TABLE,product_id,bigint,null,null,YES,favorites_user_id_product_id_key,UNIQUE,product_id,favorites,user_id
+favorites,BASE TABLE,product_id,bigint,null,null,YES,favorites_user_id_product_id_key,UNIQUE,product_id,favorites,product_id
+favorites,BASE TABLE,product_id,bigint,null,null,YES,favorites_user_id_product_id_key,UNIQUE,user_id,favorites,user_id
+favorites,BASE TABLE,product_id,bigint,null,null,YES,favorites_user_id_fkey,FOREIGN KEY,user_id,users,id
+favorites,BASE TABLE,product_id,bigint,null,null,YES,439_452_1_not_null,CHECK,null,null,null
+favorites,BASE TABLE,product_id,bigint,null,null,YES,favorites_user_id_product_id_key,UNIQUE,user_id,favorites,product_id
+favorites,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,favorites_user_id_fkey,FOREIGN KEY,user_id,users,id
+favorites,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_452_1_not_null,CHECK,null,null,null
+favorites,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,favorites_pkey,PRIMARY KEY,id,favorites,id
+favorites,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,favorites_user_id_product_id_key,UNIQUE,user_id,favorites,product_id
+favorites,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,favorites_user_id_product_id_key,UNIQUE,product_id,favorites,user_id
+favorites,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,favorites_product_id_fkey,FOREIGN KEY,product_id,products,id
+favorites,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,favorites_user_id_product_id_key,UNIQUE,product_id,favorites,product_id
+favorites,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,favorites_user_id_product_id_key,UNIQUE,user_id,favorites,user_id
+order_details,BASE TABLE,id,bigint,null,unique_rowid(),NO,order_details_pkey,PRIMARY KEY,id,order_details,id
+order_details,BASE TABLE,id,bigint,null,unique_rowid(),NO,order_details_order_id_fkey,FOREIGN KEY,order_id,orders,id
+order_details,BASE TABLE,id,bigint,null,unique_rowid(),NO,order_details_product_id_fkey,FOREIGN KEY,product_id,products,id
+order_details,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_447_1_not_null,CHECK,null,null,null
+order_details,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_447_4_not_null,CHECK,null,null,null
+order_details,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_447_5_not_null,CHECK,null,null,null
+order_details,BASE TABLE,order_id,bigint,null,null,YES,439_447_1_not_null,CHECK,null,null,null
+order_details,BASE TABLE,order_id,bigint,null,null,YES,order_details_product_id_fkey,FOREIGN KEY,product_id,products,id
+order_details,BASE TABLE,order_id,bigint,null,null,YES,439_447_4_not_null,CHECK,null,null,null
+order_details,BASE TABLE,order_id,bigint,null,null,YES,439_447_5_not_null,CHECK,null,null,null
+order_details,BASE TABLE,order_id,bigint,null,null,YES,order_details_pkey,PRIMARY KEY,id,order_details,id
+order_details,BASE TABLE,order_id,bigint,null,null,YES,order_details_order_id_fkey,FOREIGN KEY,order_id,orders,id
+order_details,BASE TABLE,product_id,bigint,null,null,YES,order_details_pkey,PRIMARY KEY,id,order_details,id
+order_details,BASE TABLE,product_id,bigint,null,null,YES,439_447_4_not_null,CHECK,null,null,null
+order_details,BASE TABLE,product_id,bigint,null,null,YES,439_447_1_not_null,CHECK,null,null,null
+order_details,BASE TABLE,product_id,bigint,null,null,YES,439_447_5_not_null,CHECK,null,null,null
+order_details,BASE TABLE,product_id,bigint,null,null,YES,order_details_order_id_fkey,FOREIGN KEY,order_id,orders,id
+order_details,BASE TABLE,product_id,bigint,null,null,YES,order_details_product_id_fkey,FOREIGN KEY,product_id,products,id
+order_details,BASE TABLE,quantity,bigint,null,null,NO,439_447_1_not_null,CHECK,null,null,null
+order_details,BASE TABLE,quantity,bigint,null,null,NO,order_details_product_id_fkey,FOREIGN KEY,product_id,products,id
+order_details,BASE TABLE,quantity,bigint,null,null,NO,order_details_pkey,PRIMARY KEY,id,order_details,id
+order_details,BASE TABLE,quantity,bigint,null,null,NO,order_details_order_id_fkey,FOREIGN KEY,order_id,orders,id
+order_details,BASE TABLE,quantity,bigint,null,null,NO,439_447_4_not_null,CHECK,null,null,null
+order_details,BASE TABLE,quantity,bigint,null,null,NO,439_447_5_not_null,CHECK,null,null,null
+order_details,BASE TABLE,price,numeric,null,null,NO,order_details_pkey,PRIMARY KEY,id,order_details,id
+order_details,BASE TABLE,price,numeric,null,null,NO,439_447_1_not_null,CHECK,null,null,null
+order_details,BASE TABLE,price,numeric,null,null,NO,439_447_4_not_null,CHECK,null,null,null
+order_details,BASE TABLE,price,numeric,null,null,NO,439_447_5_not_null,CHECK,null,null,null
+order_details,BASE TABLE,price,numeric,null,null,NO,order_details_product_id_fkey,FOREIGN KEY,product_id,products,id
+order_details,BASE TABLE,price,numeric,null,null,NO,order_details_order_id_fkey,FOREIGN KEY,order_id,orders,id
+orders,BASE TABLE,id,bigint,null,unique_rowid(),NO,orders_pkey,PRIMARY KEY,id,orders,id
+orders,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_446_4_not_null,CHECK,null,null,null
+orders,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_446_3_not_null,CHECK,null,null,null
+orders,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_446_1_not_null,CHECK,null,null,null
+orders,BASE TABLE,id,bigint,null,unique_rowid(),NO,orders_user_id_fkey,FOREIGN KEY,user_id,users,id
+orders,BASE TABLE,user_id,bigint,null,null,YES,orders_user_id_fkey,FOREIGN KEY,user_id,users,id
+orders,BASE TABLE,user_id,bigint,null,null,YES,orders_pkey,PRIMARY KEY,id,orders,id
+orders,BASE TABLE,user_id,bigint,null,null,YES,439_446_4_not_null,CHECK,null,null,null
+orders,BASE TABLE,user_id,bigint,null,null,YES,439_446_3_not_null,CHECK,null,null,null
+orders,BASE TABLE,user_id,bigint,null,null,YES,439_446_1_not_null,CHECK,null,null,null
+orders,BASE TABLE,total,numeric,null,null,NO,439_446_3_not_null,CHECK,null,null,null
+orders,BASE TABLE,total,numeric,null,null,NO,orders_user_id_fkey,FOREIGN KEY,user_id,users,id
+orders,BASE TABLE,total,numeric,null,null,NO,439_446_1_not_null,CHECK,null,null,null
+orders,BASE TABLE,total,numeric,null,null,NO,439_446_4_not_null,CHECK,null,null,null
+orders,BASE TABLE,total,numeric,null,null,NO,orders_pkey,PRIMARY KEY,id,orders,id
+orders,BASE TABLE,status,character varying,20,null,NO,439_446_4_not_null,CHECK,null,null,null
+orders,BASE TABLE,status,character varying,20,null,NO,orders_pkey,PRIMARY KEY,id,orders,id
+orders,BASE TABLE,status,character varying,20,null,NO,439_446_3_not_null,CHECK,null,null,null
+orders,BASE TABLE,status,character varying,20,null,NO,439_446_1_not_null,CHECK,null,null,null
+orders,BASE TABLE,status,character varying,20,null,NO,orders_user_id_fkey,FOREIGN KEY,user_id,users,id
+orders,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_446_1_not_null,CHECK,null,null,null
+orders,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,orders_pkey,PRIMARY KEY,id,orders,id
+orders,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_446_4_not_null,CHECK,null,null,null
+orders,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_446_3_not_null,CHECK,null,null,null
+orders,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,orders_user_id_fkey,FOREIGN KEY,user_id,users,id
+product_images,BASE TABLE,id,bigint,null,unique_rowid(),NO,product_images_product_id_fkey,FOREIGN KEY,product_id,products,id
+product_images,BASE TABLE,id,bigint,null,unique_rowid(),NO,product_images_pkey,PRIMARY KEY,id,product_images,id
+product_images,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_445_3_not_null,CHECK,null,null,null
+product_images,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_445_1_not_null,CHECK,null,null,null
+product_images,BASE TABLE,product_id,bigint,null,null,YES,product_images_product_id_fkey,FOREIGN KEY,product_id,products,id
+product_images,BASE TABLE,product_id,bigint,null,null,YES,439_445_1_not_null,CHECK,null,null,null
+product_images,BASE TABLE,product_id,bigint,null,null,YES,439_445_3_not_null,CHECK,null,null,null
+product_images,BASE TABLE,product_id,bigint,null,null,YES,product_images_pkey,PRIMARY KEY,id,product_images,id
+product_images,BASE TABLE,image_url,character varying,255,null,NO,439_445_1_not_null,CHECK,null,null,null
+product_images,BASE TABLE,image_url,character varying,255,null,NO,439_445_3_not_null,CHECK,null,null,null
+product_images,BASE TABLE,image_url,character varying,255,null,NO,product_images_pkey,PRIMARY KEY,id,product_images,id
+product_images,BASE TABLE,image_url,character varying,255,null,NO,product_images_product_id_fkey,FOREIGN KEY,product_id,products,id
+product_images,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,product_images_product_id_fkey,FOREIGN KEY,product_id,products,id
+product_images,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,product_images_pkey,PRIMARY KEY,id,product_images,id
+product_images,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_445_3_not_null,CHECK,null,null,null
+product_images,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_445_1_not_null,CHECK,null,null,null
+product_views,BASE TABLE,id,bigint,null,unique_rowid(),NO,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,product_id
+product_views,BASE TABLE,id,bigint,null,unique_rowid(),NO,product_views_product_id_fkey,FOREIGN KEY,product_id,products,id
+product_views,BASE TABLE,id,bigint,null,unique_rowid(),NO,product_views_pkey,PRIMARY KEY,id,product_views,id
+product_views,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_454_1_not_null,CHECK,null,null,null
+product_views,BASE TABLE,id,bigint,null,unique_rowid(),NO,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,user_id
+product_views,BASE TABLE,id,bigint,null,unique_rowid(),NO,product_views_user_id_fkey,FOREIGN KEY,user_id,users,id
+product_views,BASE TABLE,id,bigint,null,unique_rowid(),NO,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,user_id
+product_views,BASE TABLE,id,bigint,null,unique_rowid(),NO,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,product_id
+product_views,BASE TABLE,user_id,bigint,null,null,YES,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,product_id
+product_views,BASE TABLE,user_id,bigint,null,null,YES,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,user_id
+product_views,BASE TABLE,user_id,bigint,null,null,YES,product_views_pkey,PRIMARY KEY,id,product_views,id
+product_views,BASE TABLE,user_id,bigint,null,null,YES,439_454_1_not_null,CHECK,null,null,null
+product_views,BASE TABLE,user_id,bigint,null,null,YES,product_views_product_id_fkey,FOREIGN KEY,product_id,products,id
+product_views,BASE TABLE,user_id,bigint,null,null,YES,product_views_user_id_fkey,FOREIGN KEY,user_id,users,id
+product_views,BASE TABLE,user_id,bigint,null,null,YES,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,product_id
+product_views,BASE TABLE,user_id,bigint,null,null,YES,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,user_id
+product_views,BASE TABLE,product_id,bigint,null,null,YES,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,user_id
+product_views,BASE TABLE,product_id,bigint,null,null,YES,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,product_id
+product_views,BASE TABLE,product_id,bigint,null,null,YES,product_views_pkey,PRIMARY KEY,id,product_views,id
+product_views,BASE TABLE,product_id,bigint,null,null,YES,439_454_1_not_null,CHECK,null,null,null
+product_views,BASE TABLE,product_id,bigint,null,null,YES,product_views_product_id_fkey,FOREIGN KEY,product_id,products,id
+product_views,BASE TABLE,product_id,bigint,null,null,YES,product_views_user_id_fkey,FOREIGN KEY,user_id,users,id
+product_views,BASE TABLE,product_id,bigint,null,null,YES,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,product_id
+product_views,BASE TABLE,product_id,bigint,null,null,YES,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,user_id
+product_views,BASE TABLE,view_count,bigint,null,1,YES,product_views_product_id_fkey,FOREIGN KEY,product_id,products,id
+product_views,BASE TABLE,view_count,bigint,null,1,YES,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,product_id
+product_views,BASE TABLE,view_count,bigint,null,1,YES,439_454_1_not_null,CHECK,null,null,null
+product_views,BASE TABLE,view_count,bigint,null,1,YES,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,user_id
+product_views,BASE TABLE,view_count,bigint,null,1,YES,product_views_user_id_fkey,FOREIGN KEY,user_id,users,id
+product_views,BASE TABLE,view_count,bigint,null,1,YES,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,product_id
+product_views,BASE TABLE,view_count,bigint,null,1,YES,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,user_id
+product_views,BASE TABLE,view_count,bigint,null,1,YES,product_views_pkey,PRIMARY KEY,id,product_views,id
+product_views,BASE TABLE,last_viewed_at,timestamp without time zone,null,current_timestamp(),YES,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,product_id
+product_views,BASE TABLE,last_viewed_at,timestamp without time zone,null,current_timestamp(),YES,product_views_pkey,PRIMARY KEY,id,product_views,id
+product_views,BASE TABLE,last_viewed_at,timestamp without time zone,null,current_timestamp(),YES,439_454_1_not_null,CHECK,null,null,null
+product_views,BASE TABLE,last_viewed_at,timestamp without time zone,null,current_timestamp(),YES,product_views_product_id_fkey,FOREIGN KEY,product_id,products,id
+product_views,BASE TABLE,last_viewed_at,timestamp without time zone,null,current_timestamp(),YES,product_views_user_id_fkey,FOREIGN KEY,user_id,users,id
+product_views,BASE TABLE,last_viewed_at,timestamp without time zone,null,current_timestamp(),YES,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,product_id
+product_views,BASE TABLE,last_viewed_at,timestamp without time zone,null,current_timestamp(),YES,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,user_id
+product_views,BASE TABLE,last_viewed_at,timestamp without time zone,null,current_timestamp(),YES,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,user_id
+product_views,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,user_id
+product_views,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,product_views_pkey,PRIMARY KEY,id,product_views,id
+product_views,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_454_1_not_null,CHECK,null,null,null
+product_views,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,product_views_product_id_fkey,FOREIGN KEY,product_id,products,id
+product_views,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,product_views_user_id_fkey,FOREIGN KEY,user_id,users,id
+product_views,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,product_id
+product_views,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,product_views_user_id_product_id_key,UNIQUE,product_id,product_views,user_id
+product_views,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,product_views_user_id_product_id_key,UNIQUE,user_id,product_views,product_id
+products,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_444_1_not_null,CHECK,null,null,null
+products,BASE TABLE,id,bigint,null,unique_rowid(),NO,products_pkey,PRIMARY KEY,id,products,id
+products,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_444_5_not_null,CHECK,null,null,null
+products,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_444_4_not_null,CHECK,null,null,null
+products,BASE TABLE,id,bigint,null,unique_rowid(),NO,products_category_id_fkey,FOREIGN KEY,category_id,categories,id
+products,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_444_2_not_null,CHECK,null,null,null
+products,BASE TABLE,name,character varying,100,null,NO,439_444_2_not_null,CHECK,null,null,null
+products,BASE TABLE,name,character varying,100,null,NO,439_444_1_not_null,CHECK,null,null,null
+products,BASE TABLE,name,character varying,100,null,NO,products_pkey,PRIMARY KEY,id,products,id
+products,BASE TABLE,name,character varying,100,null,NO,products_category_id_fkey,FOREIGN KEY,category_id,categories,id
+products,BASE TABLE,name,character varying,100,null,NO,439_444_5_not_null,CHECK,null,null,null
+products,BASE TABLE,name,character varying,100,null,NO,439_444_4_not_null,CHECK,null,null,null
+products,BASE TABLE,description,text,null,null,YES,products_category_id_fkey,FOREIGN KEY,category_id,categories,id
+products,BASE TABLE,description,text,null,null,YES,439_444_1_not_null,CHECK,null,null,null
+products,BASE TABLE,description,text,null,null,YES,439_444_2_not_null,CHECK,null,null,null
+products,BASE TABLE,description,text,null,null,YES,439_444_4_not_null,CHECK,null,null,null
+products,BASE TABLE,description,text,null,null,YES,439_444_5_not_null,CHECK,null,null,null
+products,BASE TABLE,description,text,null,null,YES,products_pkey,PRIMARY KEY,id,products,id
+products,BASE TABLE,price,numeric,null,null,NO,439_444_4_not_null,CHECK,null,null,null
+products,BASE TABLE,price,numeric,null,null,NO,products_pkey,PRIMARY KEY,id,products,id
+products,BASE TABLE,price,numeric,null,null,NO,439_444_5_not_null,CHECK,null,null,null
+products,BASE TABLE,price,numeric,null,null,NO,439_444_2_not_null,CHECK,null,null,null
+products,BASE TABLE,price,numeric,null,null,NO,439_444_1_not_null,CHECK,null,null,null
+products,BASE TABLE,price,numeric,null,null,NO,products_category_id_fkey,FOREIGN KEY,category_id,categories,id
+products,BASE TABLE,stock,bigint,null,null,NO,products_pkey,PRIMARY KEY,id,products,id
+products,BASE TABLE,stock,bigint,null,null,NO,products_category_id_fkey,FOREIGN KEY,category_id,categories,id
+products,BASE TABLE,stock,bigint,null,null,NO,439_444_1_not_null,CHECK,null,null,null
+products,BASE TABLE,stock,bigint,null,null,NO,439_444_2_not_null,CHECK,null,null,null
+products,BASE TABLE,stock,bigint,null,null,NO,439_444_4_not_null,CHECK,null,null,null
+products,BASE TABLE,stock,bigint,null,null,NO,439_444_5_not_null,CHECK,null,null,null
+products,BASE TABLE,category_id,bigint,null,null,YES,products_category_id_fkey,FOREIGN KEY,category_id,categories,id
+products,BASE TABLE,category_id,bigint,null,null,YES,439_444_5_not_null,CHECK,null,null,null
+products,BASE TABLE,category_id,bigint,null,null,YES,products_pkey,PRIMARY KEY,id,products,id
+products,BASE TABLE,category_id,bigint,null,null,YES,439_444_1_not_null,CHECK,null,null,null
+products,BASE TABLE,category_id,bigint,null,null,YES,439_444_4_not_null,CHECK,null,null,null
+products,BASE TABLE,category_id,bigint,null,null,YES,439_444_2_not_null,CHECK,null,null,null
+products,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,products_category_id_fkey,FOREIGN KEY,category_id,categories,id
+products,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_444_2_not_null,CHECK,null,null,null
+products,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_444_4_not_null,CHECK,null,null,null
+products,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_444_5_not_null,CHECK,null,null,null
+products,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,products_pkey,PRIMARY KEY,id,products,id
+products,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_444_1_not_null,CHECK,null,null,null
+settings,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_449_3_not_null,CHECK,null,null,null
+settings,BASE TABLE,id,bigint,null,unique_rowid(),NO,settings_pkey,PRIMARY KEY,id,settings,id
+settings,BASE TABLE,id,bigint,null,unique_rowid(),NO,settings_key_key,UNIQUE,key,settings,key
+settings,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_449_1_not_null,CHECK,null,null,null
+settings,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_449_2_not_null,CHECK,null,null,null
+settings,BASE TABLE,key,character varying,100,null,NO,settings_pkey,PRIMARY KEY,id,settings,id
+settings,BASE TABLE,key,character varying,100,null,NO,439_449_3_not_null,CHECK,null,null,null
+settings,BASE TABLE,key,character varying,100,null,NO,439_449_2_not_null,CHECK,null,null,null
+settings,BASE TABLE,key,character varying,100,null,NO,439_449_1_not_null,CHECK,null,null,null
+settings,BASE TABLE,key,character varying,100,null,NO,settings_key_key,UNIQUE,key,settings,key
+settings,BASE TABLE,value,text,null,null,NO,439_449_3_not_null,CHECK,null,null,null
+settings,BASE TABLE,value,text,null,null,NO,439_449_2_not_null,CHECK,null,null,null
+settings,BASE TABLE,value,text,null,null,NO,439_449_1_not_null,CHECK,null,null,null
+settings,BASE TABLE,value,text,null,null,NO,settings_key_key,UNIQUE,key,settings,key
+settings,BASE TABLE,value,text,null,null,NO,settings_pkey,PRIMARY KEY,id,settings,id
+settings,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,settings_pkey,PRIMARY KEY,id,settings,id
+settings,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_449_3_not_null,CHECK,null,null,null
+settings,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_449_2_not_null,CHECK,null,null,null
+settings,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,settings_key_key,UNIQUE,key,settings,key
+settings,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_449_1_not_null,CHECK,null,null,null
+users,BASE TABLE,id,bigint,null,unique_rowid(),NO,users_username_key,UNIQUE,username,users,username
+users,BASE TABLE,id,bigint,null,unique_rowid(),NO,users_pkey,PRIMARY KEY,id,users,id
+users,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_442_5_not_null,CHECK,null,null,null
+users,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_442_4_not_null,CHECK,null,null,null
+users,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_442_3_not_null,CHECK,null,null,null
+users,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_442_2_not_null,CHECK,null,null,null
+users,BASE TABLE,id,bigint,null,unique_rowid(),NO,439_442_1_not_null,CHECK,null,null,null
+users,BASE TABLE,id,bigint,null,unique_rowid(),NO,valid_phone_number,CHECK,null,users,phone_number
+users,BASE TABLE,id,bigint,null,unique_rowid(),NO,users_email_key,UNIQUE,email,users,email
+users,BASE TABLE,username,character varying,50,null,NO,439_442_4_not_null,CHECK,null,null,null
+users,BASE TABLE,username,character varying,50,null,NO,users_username_key,UNIQUE,username,users,username
+users,BASE TABLE,username,character varying,50,null,NO,439_442_5_not_null,CHECK,null,null,null
+users,BASE TABLE,username,character varying,50,null,NO,users_pkey,PRIMARY KEY,id,users,id
+users,BASE TABLE,username,character varying,50,null,NO,439_442_3_not_null,CHECK,null,null,null
+users,BASE TABLE,username,character varying,50,null,NO,439_442_2_not_null,CHECK,null,null,null
+users,BASE TABLE,username,character varying,50,null,NO,439_442_1_not_null,CHECK,null,null,null
+users,BASE TABLE,username,character varying,50,null,NO,valid_phone_number,CHECK,null,users,phone_number
+users,BASE TABLE,username,character varying,50,null,NO,users_email_key,UNIQUE,email,users,email
+users,BASE TABLE,email,character varying,100,null,NO,valid_phone_number,CHECK,null,users,phone_number
+users,BASE TABLE,email,character varying,100,null,NO,users_pkey,PRIMARY KEY,id,users,id
+users,BASE TABLE,email,character varying,100,null,NO,439_442_5_not_null,CHECK,null,null,null
+users,BASE TABLE,email,character varying,100,null,NO,439_442_4_not_null,CHECK,null,null,null
+users,BASE TABLE,email,character varying,100,null,NO,439_442_3_not_null,CHECK,null,null,null
+users,BASE TABLE,email,character varying,100,null,NO,439_442_2_not_null,CHECK,null,null,null
+users,BASE TABLE,email,character varying,100,null,NO,439_442_1_not_null,CHECK,null,null,null
+users,BASE TABLE,email,character varying,100,null,NO,users_username_key,UNIQUE,username,users,username
+users,BASE TABLE,email,character varying,100,null,NO,users_email_key,UNIQUE,email,users,email
+users,BASE TABLE,password,character varying,255,null,NO,439_442_5_not_null,CHECK,null,null,null
+users,BASE TABLE,password,character varying,255,null,NO,users_username_key,UNIQUE,username,users,username
+users,BASE TABLE,password,character varying,255,null,NO,users_pkey,PRIMARY KEY,id,users,id
+users,BASE TABLE,password,character varying,255,null,NO,439_442_4_not_null,CHECK,null,null,null
+users,BASE TABLE,password,character varying,255,null,NO,439_442_3_not_null,CHECK,null,null,null
+users,BASE TABLE,password,character varying,255,null,NO,439_442_2_not_null,CHECK,null,null,null
+users,BASE TABLE,password,character varying,255,null,NO,439_442_1_not_null,CHECK,null,null,null
+users,BASE TABLE,password,character varying,255,null,NO,valid_phone_number,CHECK,null,users,phone_number
+users,BASE TABLE,password,character varying,255,null,NO,users_email_key,UNIQUE,email,users,email
+users,BASE TABLE,role,character varying,20,null,NO,439_442_3_not_null,CHECK,null,null,null
+users,BASE TABLE,role,character varying,20,null,NO,users_username_key,UNIQUE,username,users,username
+users,BASE TABLE,role,character varying,20,null,NO,439_442_5_not_null,CHECK,null,null,null
+users,BASE TABLE,role,character varying,20,null,NO,439_442_4_not_null,CHECK,null,null,null
+users,BASE TABLE,role,character varying,20,null,NO,users_pkey,PRIMARY KEY,id,users,id
+users,BASE TABLE,role,character varying,20,null,NO,439_442_2_not_null,CHECK,null,null,null
+users,BASE TABLE,role,character varying,20,null,NO,439_442_1_not_null,CHECK,null,null,null
+users,BASE TABLE,role,character varying,20,null,NO,valid_phone_number,CHECK,null,users,phone_number
+users,BASE TABLE,role,character varying,20,null,NO,users_email_key,UNIQUE,email,users,email
+users,BASE TABLE,profile_image_url,character varying,255,null,YES,users_username_key,UNIQUE,username,users,username
+users,BASE TABLE,profile_image_url,character varying,255,null,YES,users_pkey,PRIMARY KEY,id,users,id
+users,BASE TABLE,profile_image_url,character varying,255,null,YES,439_442_5_not_null,CHECK,null,null,null
+users,BASE TABLE,profile_image_url,character varying,255,null,YES,439_442_4_not_null,CHECK,null,null,null
+users,BASE TABLE,profile_image_url,character varying,255,null,YES,439_442_3_not_null,CHECK,null,null,null
+users,BASE TABLE,profile_image_url,character varying,255,null,YES,439_442_2_not_null,CHECK,null,null,null
+users,BASE TABLE,profile_image_url,character varying,255,null,YES,439_442_1_not_null,CHECK,null,null,null
+users,BASE TABLE,profile_image_url,character varying,255,null,YES,valid_phone_number,CHECK,null,users,phone_number
+users,BASE TABLE,profile_image_url,character varying,255,null,YES,users_email_key,UNIQUE,email,users,email
+users,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,users_email_key,UNIQUE,email,users,email
+users,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,users_username_key,UNIQUE,username,users,username
+users,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_442_5_not_null,CHECK,null,null,null
+users,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_442_4_not_null,CHECK,null,null,null
+users,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_442_3_not_null,CHECK,null,null,null
+users,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_442_2_not_null,CHECK,null,null,null
+users,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,439_442_1_not_null,CHECK,null,null,null
+users,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,valid_phone_number,CHECK,null,users,phone_number
+users,BASE TABLE,created_at,timestamp without time zone,null,current_timestamp(),YES,users_pkey,PRIMARY KEY,id,users,id
+users,BASE TABLE,phone_number,character varying,20,null,YES,users_username_key,UNIQUE,username,users,username
+users,BASE TABLE,phone_number,character varying,20,null,YES,users_pkey,PRIMARY KEY,id,users,id
+users,BASE TABLE,phone_number,character varying,20,null,YES,439_442_5_not_null,CHECK,null,null,null
+users,BASE TABLE,phone_number,character varying,20,null,YES,439_442_4_not_null,CHECK,null,null,null
+users,BASE TABLE,phone_number,character varying,20,null,YES,439_442_3_not_null,CHECK,null,null,null
+users,BASE TABLE,phone_number,character varying,20,null,YES,439_442_2_not_null,CHECK,null,null,null
+users,BASE TABLE,phone_number,character varying,20,null,YES,439_442_1_not_null,CHECK,null,null,null
+users,BASE TABLE,phone_number,character varying,20,null,YES,valid_phone_number,CHECK,null,users,phone_number
+users,BASE TABLE,phone_number,character varying,20,null,YES,users_email_key,UNIQUE,email,users,email
+users,BASE TABLE,profile_bio,text,null,null,YES,439_442_2_not_null,CHECK,null,null,null
+users,BASE TABLE,profile_bio,text,null,null,YES,users_pkey,PRIMARY KEY,id,users,id
+users,BASE TABLE,profile_bio,text,null,null,YES,439_442_5_not_null,CHECK,null,null,null
+users,BASE TABLE,profile_bio,text,null,null,YES,439_442_4_not_null,CHECK,null,null,null
+users,BASE TABLE,profile_bio,text,null,null,YES,439_442_3_not_null,CHECK,null,null,null
+users,BASE TABLE,profile_bio,text,null,null,YES,439_442_1_not_null,CHECK,null,null,null
+users,BASE TABLE,profile_bio,text,null,null,YES,valid_phone_number,CHECK,null,users,phone_number
+users,BASE TABLE,profile_bio,text,null,null,YES,users_email_key,UNIQUE,email,users,email
+users,BASE TABLE,profile_bio,text,null,null,YES,users_username_key,UNIQUE,username,users,username
+users,BASE TABLE,address,text,null,null,YES,439_442_2_not_null,CHECK,null,null,null
+users,BASE TABLE,address,text,null,null,YES,439_442_5_not_null,CHECK,null,null,null
+users,BASE TABLE,address,text,null,null,YES,439_442_4_not_null,CHECK,null,null,null
+users,BASE TABLE,address,text,null,null,YES,439_442_3_not_null,CHECK,null,null,null
+users,BASE TABLE,address,text,null,null,YES,users_pkey,PRIMARY KEY,id,users,id
+users,BASE TABLE,address,text,null,null,YES,439_442_1_not_null,CHECK,null,null,null
+users,BASE TABLE,address,text,null,null,YES,valid_phone_number,CHECK,null,users,phone_number
+users,BASE TABLE,address,text,null,null,YES,users_email_key,UNIQUE,email,users,email
+users,BASE TABLE,address,text,null,null,YES,users_username_key,UNIQUE,username,users,username
+users,BASE TABLE,location,character varying,255,null,YES,users_pkey,PRIMARY KEY,id,users,id
+users,BASE TABLE,location,character varying,255,null,YES,439_442_5_not_null,CHECK,null,null,null
+users,BASE TABLE,location,character varying,255,null,YES,439_442_4_not_null,CHECK,null,null,null
+users,BASE TABLE,location,character varying,255,null,YES,439_442_3_not_null,CHECK,null,null,null
+users,BASE TABLE,location,character varying,255,null,YES,439_442_2_not_null,CHECK,null,null,null
+users,BASE TABLE,location,character varying,255,null,YES,439_442_1_not_null,CHECK,null,null,null
+users,BASE TABLE,location,character varying,255,null,YES,valid_phone_number,CHECK,null,users,phone_number
+users,BASE TABLE,location,character varying,255,null,YES,users_email_key,UNIQUE,email,users,email
+users,BASE TABLE,location,character varying,255,null,YES,users_username_key,UNIQUE,username,users,username
