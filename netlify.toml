@@ -1,0 +1,19 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["@node-rs/bcrypt", "bcrypt", "jsonwebtoken"]
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/next_server"
+  status = 200

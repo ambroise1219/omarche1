@@ -2,15 +2,19 @@
 
 import { toast } from 'sonner'
 
+// Utiliser une URL de base dynamique
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'
+
 /**
  * Fonction utilitaire pour effectuer des appels API avec retry et gestion d'erreurs
- * @param {string} url - URL de l'API
+ * @param {string} endpoint - Endpoint de l'API
  * @param {Object} options - Options de la requête fetch
  * @param {number} retries - Nombre de tentatives en cas d'échec
  * @param {number} delay - Délai entre les tentatives en millisecondes
  * @returns {Promise<any>} Données de la réponse
  */
-export async function fetchWithRetry(url, options = {}, retries = 2, delay = 1000) {
+export async function fetchWithRetry(endpoint, options = {}, retries = 2, delay = 1000) {
+  const url = endpoint.startsWith('http') ? endpoint : `${API_URL}${endpoint}`
   let lastError
   
   for (let i = 0; i <= retries; i++) {
@@ -49,7 +53,7 @@ export async function fetchWithRetry(url, options = {}, retries = 2, delay = 100
  */
 export async function fetchCategories() {
   try {
-    const data = await fetchWithRetry('/api/categories')
+    const data = await fetchWithRetry('/categories')
     return data
   } catch (error) {
     console.error('Erreur lors du chargement des catégories:', error)
@@ -64,7 +68,7 @@ export async function fetchCategories() {
  */
 export async function fetchProducts() {
   try {
-    const data = await fetchWithRetry('/api/products')
+    const data = await fetchWithRetry('/products')
     return data
   } catch (error) {
     console.error('Erreur lors du chargement des produits:', error)
@@ -80,7 +84,7 @@ export async function fetchProducts() {
  */
 export async function fetchProductById(id) {
   try {
-    const data = await fetchWithRetry(`/api/products/${id}`)
+    const data = await fetchWithRetry(`/products/${id}`)
     return data
   } catch (error) {
     console.error('Erreur lors du chargement du produit:', error)
@@ -97,7 +101,7 @@ export async function fetchProductById(id) {
 export async function fetchCategoryById(id) {
   try {
     console.log('📝 [Client] Récupération catégorie:', id);
-    const response = await fetch(`/api/categories/${id}`);
+    const response = await fetchWithRetry(`/categories/${id}`);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -119,7 +123,7 @@ export async function fetchCategoryById(id) {
 export async function fetchProductsByCategory(categoryId) {
   try {
     console.log('📝 Récupération produits de la catégorie:', categoryId);
-    const response = await fetch(`/api/products?category=${categoryId}`);
+    const response = await fetchWithRetry(`/products?category=${categoryId}`);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

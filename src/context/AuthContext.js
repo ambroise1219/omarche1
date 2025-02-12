@@ -3,6 +3,8 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api'
+
 const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
@@ -18,7 +20,7 @@ export function AuthProvider({ children }) {
   const checkAuth = useCallback(async () => {
     try {
       console.log('🔍 Vérification de la session...')
-      const response = await fetch('/api/auth/me')
+      const response = await fetch(`${API_URL}/auth/me`)
       const data = await response.json()
       
       
@@ -49,7 +51,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +89,7 @@ export function AuthProvider({ children }) {
 
   const register = async (userData) => {
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +117,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', {
+      await fetch(`${API_URL}/auth/logout`, {
         method: 'POST',
         credentials: 'include'
       })
