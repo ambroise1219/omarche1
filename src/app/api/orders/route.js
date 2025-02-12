@@ -1,21 +1,42 @@
 import { NextResponse } from 'next/server';
 import pool from '../../../../lib/db';
+import { verifyAuth } from '../../../../lib/auth';
 
 export async function GET() {
   try {
     const result = await pool.query(`
-      SELECT o.*, u.username, u.email,
-      json_agg(json_build_object(
-        'product_id', od.product_id,
-        'quantity', od.quantity,
-        'price', od.price
-      )) as items
+      SELECT 
+        o.*,
+        u.username,
+        u.email,
+        u.phone_number,
+        json_agg(
+          json_build_object(
+            'product_id', od.product_id,
+            'quantity', od.quantity,
+            'price', od.price,
+            'product', (
+              SELECT json_build_object(
+                'name', p.name,
+                'image_url', (
+                  SELECT image_url 
+                  FROM product_images pi 
+                  WHERE pi.product_id = p.id 
+                  LIMIT 1
+                )
+              )
+              FROM products p 
+              WHERE p.id = od.product_id
+            )
+          )
+        ) as items
       FROM orders o 
       LEFT JOIN users u ON o.user_id = u.id
       LEFT JOIN order_details od ON o.id = od.order_id
-      GROUP BY o.id, u.username, u.email
+      GROUP BY o.id, u.id
       ORDER BY o.created_at DESC
     `);
+    
     return NextResponse.json(result.rows);
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -25,7 +46,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const data = await request.json();
-    console.log('📦 Données reçues:', data);
+    
 
     const { formData, cartItems, total, user } = data;
 
@@ -65,8 +86,7 @@ export async function POST(request) {
     } else {
       // Vérifier et formater le numéro de téléphone
       const formattedPhone = formatPhoneNumber(formData.phone);
-      console.log('📱 Numéro formaté:', formattedPhone);
-
+     
       // Créer un utilisateur guest avec l'email fourni
       const guestUser = await pool.query(`
         INSERT INTO users (
@@ -94,7 +114,7 @@ export async function POST(request) {
       ]);
       
       userId = guestUser.rows[0].id;
-      console.log('✅ Nouvel utilisateur guest créé:', userId);
+     
     }
 
     // Créer la commande
@@ -125,6 +145,50 @@ export async function POST(request) {
     console.error('❌ Erreur:', error);
     return NextResponse.json(
       { error: "Erreur lors de la création de la commande" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request) {
+  try {
+    // Vérifier le token d'authentification
+    const token = request.cookies.get('auth_token')?.value;
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Non authentifié' }, 
+        { status: 401 }
+      );
+    }
+
+    // Vérifier que l'utilisateur est admin
+    const decoded = await verifyAuth(token);
+    if (decoded.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Non autorisé' }, 
+        { status: 403 }
+      );
+    }
+
+    const { orderId, status } = await request.json();
+    
+    const result = await pool.query(
+      'UPDATE orders SET status = $1 WHERE id = $2 RETURNING *',
+      [status, orderId]
+    );
+
+    if (result.rows.length === 0) {
+      return NextResponse.json(
+        { error: 'Commande non trouvée' }, 
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating order:', error);
+    return NextResponse.json(
+      { error: 'Erreur lors de la mise à jour' }, 
       { status: 500 }
     );
   }

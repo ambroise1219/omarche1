@@ -48,14 +48,13 @@ export async function GET(request, context) {
  */
 export async function PUT(request, context) {
   let client;
-  console.log('=== DÉBUT DE LA MISE À JOUR ===');
-  console.log('ID du produit:', context.params.id);
+  
   
   try {
     client = await pool.connect();
     const { id } = context.params;
     const bodyText = await request.text();
-    console.log('Body brut:', bodyText);
+    
     
     let bodyData;
     try {
@@ -69,19 +68,10 @@ export async function PUT(request, context) {
     }
 
     const { name, description, price, stock, category_id, images } = bodyData;
-    console.log('Données parsées:', {
-      id,
-      name,
-      description,
-      price,
-      stock,
-      category_id,
-      images
-    });
-
+ 
     // Validation des données
     if (!name || !price || !stock || !category_id) {
-      console.log('Validation échouée:', { name, price, stock, category_id });
+    
       return NextResponse.json(
         { error: 'Tous les champs obligatoires doivent être remplis' },
         { status: 400 }
@@ -89,7 +79,7 @@ export async function PUT(request, context) {
     }
 
     await client.query('BEGIN');
-    console.log('Transaction commencée');
+    
 
     try {
       // Vérifier si le produit existe
@@ -97,7 +87,7 @@ export async function PUT(request, context) {
         'SELECT id FROM products WHERE id = $1',
         [id]
       );
-      console.log('Vérification produit:', productExists.rows);
+       
 
       if (productExists.rows.length === 0) {
         throw new Error('Produit non trouvé');
@@ -108,22 +98,14 @@ export async function PUT(request, context) {
         'SELECT id FROM categories WHERE id = $1',
         [category_id]
       );
-      console.log('Vérification catégorie:', categoryExists.rows);
+     
 
       if (categoryExists.rows.length === 0) {
         throw new Error('Catégorie non trouvée');
       }
 
       // Mise à jour du produit
-      console.log('Tentative de mise à jour du produit avec:', {
-        name,
-        description,
-        price,
-        stock,
-        category_id,
-        id
-      });
-
+     
       const result = await client.query(
         `UPDATE products 
          SET name = $1, description = $2, price = $3, stock = $4, category_id = $5 
@@ -131,10 +113,10 @@ export async function PUT(request, context) {
          RETURNING *`,
         [name, description || null, price, stock, category_id, id]
       );
-      console.log('Résultat mise à jour produit:', result.rows[0]);
+       
 
       // Supprimer toutes les anciennes images
-      console.log('Suppression des anciennes images pour le produit:', id);
+     
       await client.query(
         'DELETE FROM product_images WHERE product_id = $1',
         [id]
@@ -142,11 +124,11 @@ export async function PUT(request, context) {
 
       // Ajouter les nouvelles images
       if (images && images.length > 0) {
-        console.log('Ajout des nouvelles images:', images);
+        
         for (const image of images) {
           const imageUrl = image.url || image.image_url;
           if (imageUrl) {
-            console.log('Insertion image:', imageUrl);
+          
             await client.query(
               'INSERT INTO product_images (product_id, image_url) VALUES ($1, $2)',
               [id, imageUrl]
@@ -156,7 +138,7 @@ export async function PUT(request, context) {
       }
 
       // Récupérer le produit mis à jour avec ses nouvelles images
-      console.log('Récupération du produit mis à jour');
+       
       const updatedProduct = await client.query(`
         SELECT 
           p.*,
@@ -198,7 +180,7 @@ export async function PUT(request, context) {
       { status: 500 }
     );
   } finally {
-    console.log('=== FIN DE LA MISE À JOUR ===');
+     
     if (client) {
       client.release();
     }

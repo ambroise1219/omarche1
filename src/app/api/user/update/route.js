@@ -72,8 +72,7 @@ export async function PUT(request) {
       RETURNING id, username, email, role, phone_number, location, profile_image_url
     `
 
-    console.log('Query:', query)
-    console.log('Values:', values)
+   
 
     const result = await executeQuery(query, values)
     

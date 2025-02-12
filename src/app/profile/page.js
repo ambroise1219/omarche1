@@ -38,12 +38,11 @@ export default function ProfilePage() {
   const { user, loading, logout, checkAuth } = useAuth()
   const router = useRouter()
   
-  // États locaux
+  // États locaux dans le même ordre
   const [activeTab, setActiveTab] = useState('overview')
   const [progress, setProgress] = useState(0)
   const [isEditing, setIsEditing] = useState(false)
-  
-  // État du formulaire avec les données utilisateur
+  const [userOrders, setUserOrders] = useState([])
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -52,6 +51,57 @@ export default function ProfilePage() {
     location: '',
     profile_image_url: ''
   })
+
+  // Tous les useEffect regroupés ensemble
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      if (!loading && !user) {
+        router.push('/auth?redirectTo=/profile')
+        return
+      }
+
+      if (user) {
+        setFormData({
+          username: user.username || '',
+          email: user.email || '',
+          password: '',
+          phone_number: user.phone_number || '',
+          location: user.location || '',
+          profile_image_url: user.profile_image_url || ''
+        })
+
+        const fields = ['username', 'email', 'phone_number', 'location', 'profile_image_url']
+        const filledFields = fields.filter(field => user[field]).length
+        const progress = Math.round((filledFields / fields.length) * 100)
+        setProgress(progress)
+      }
+    }
+
+    checkAuthStatus()
+  }, [user, loading, router])
+
+  useEffect(() => {
+    const timer = setTimeout(() => setProgress(66), 500)
+    return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (user) {
+        try {
+          const response = await fetch(`/api/users/${user.id}/orders`)
+          const data = await response.json()
+          if (response.ok) {
+            setUserOrders(data)
+          }
+        } catch (error) {
+          console.error('Erreur lors du chargement des commandes:', error)
+        }
+      }
+    }
+
+    fetchOrders()
+  }, [user])
 
   /**
    * Statistiques affichées sur le profil utilisateur
@@ -83,45 +133,6 @@ export default function ProfilePage() {
     "Treichville",
     "Yopougon",
   ]
-
-  // Vérification de l'authentification et redirection si nécessaire
-  useEffect(() => {
-    const checkAuth = async () => {
-      console.log('Profile - État de l\'authentification:', { user, loading })
-      
-      if (!loading && !user) {
-        console.log('Profile - Redirection vers /auth')
-        router.push('/auth?redirectTo=/profile')
-        return
-      }
-
-      // Mise à jour du formulaire quand l'utilisateur est chargé
-      if (user) {
-        setFormData({
-          username: user.username || '',
-          email: user.email || '',
-          password: '',
-          phone_number: user.phone_number || '',
-          location: user.location || '',
-          profile_image_url: user.profile_image_url || ''
-        })
-
-        // Mise à jour de la progression du profil
-        const fields = ['username', 'email', 'phone_number', 'location', 'profile_image_url']
-        const filledFields = fields.filter(field => user[field]).length
-        const progress = Math.round((filledFields / fields.length) * 100)
-        setProgress(progress)
-      }
-    }
-
-    checkAuth()
-  }, [user, loading, router])
-
-  // Animation de la barre de progression
-  useEffect(() => {
-    const timer = setTimeout(() => setProgress(66), 500)
-    return () => clearTimeout(timer)
-  }, [])
 
   // Gestion des changements dans le formulaire
   const handleInputChange = (e) => {
@@ -247,7 +258,7 @@ export default function ProfilePage() {
                   >
                     <span className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      Vue d'ensemble
+                      Vue d&apos;ensemble
                     </span>
                     <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Button>
@@ -267,8 +278,8 @@ export default function ProfilePage() {
               </CardContent>
               <CardFooter>
                 <Button 
-                  variant="destructive" 
-                  className="w-full"
+                  variant="destructive " 
+                  className="w-full border-red-500 border-2 hover:text-white text-black hover:bg-red-600" 
                   onClick={async () => {
                     await logout()
                     router.push('/auth')
@@ -305,7 +316,7 @@ export default function ProfilePage() {
                     {isEditing ? (
                       <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="space-y-2">
-                          <Label htmlFor="username">Nom d'utilisateur</Label>
+                          <Label htmlFor="username">Nom d&apos;utilisateur</Label>
                           <Input
                             id="username"
                             name="username"
@@ -372,10 +383,12 @@ export default function ProfilePage() {
                             {/* Aperçu de la photo actuelle */}
                             <div className="w-24 h-24 border-2 border-dashed rounded-lg border-muted-foreground/25">
                               {formData.profile_image_url ? (
-                                <img 
+                                <Image 
                                   src={formData.profile_image_url} 
                                   alt="Photo de profil" 
-                                  className="w-full h-full rounded-lg object-cover"
+                                  className="w-full h-full rounded-lg object-contain"
+                                  width={96}
+                                  height={96}
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center">
@@ -437,7 +450,7 @@ export default function ProfilePage() {
                             <User className="h-6 w-6 text-orange-500" />
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium">Nom d'utilisateur</p>
+                            <p className="text-sm font-medium">Nom d&apos;utilisateur</p>
                             <p className="text-sm text-muted-foreground">
                               {user.username}
                             </p>
@@ -494,24 +507,67 @@ export default function ProfilePage() {
               </TabsContent>
 
               <TabsContent value="orders">
-                <Card className="hover:shadow-lg transition-shadow duration-300">
+                <Card>
                   <CardHeader>
                     <CardTitle>Mes commandes</CardTitle>
                     <CardDescription>Historique de vos commandes</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-12">
-                      <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-orange-500/10 mb-4">
-                        <Package className="h-10 w-10 text-orange-500" />
+                    {userOrders.length === 0 ? (
+                      <div className="text-center py-12">
+                        <Package className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                        <h3 className="text-lg font-medium">Aucune commande</h3>
+                        <p className="text-sm text-gray-500 mt-2">Vous n&apos;avez pas encore passé de commande</p>
                       </div>
-                      <h3 className="text-lg font-semibold mb-2">Aucune commande</h3>
-                      <p className="text-sm text-muted-foreground mb-6">
-                        Vous n'avez pas encore passé de commande
-                      </p>
-                      <Button variant="default" className="bg-orange-500 hover:bg-orange-600 text-white">
-                        Découvrir nos produits
-                      </Button>
-                    </div>
+                    ) : (
+                      <div className="space-y-6">
+                        {userOrders.map((order) => (
+                          <div key={order.id} className="border rounded-lg p-4">
+                            <div className="flex justify-between items-start mb-4">
+                              <div>
+                                <p className="font-medium">Commande #{order.id}</p>
+                                <p className="text-sm text-gray-500">
+                                  {new Date(order.created_at).toLocaleDateString('fr-FR')}
+                                </p>
+                              </div>
+                              <Badge variant={order.status === 'pending' ? 'warning' : 'success'}>
+                                {order.status === 'pending' ? 'En attente' : 'Livrée'}
+                              </Badge>
+                            </div>
+                            
+                            <div className="space-y-2">
+                              {order.items.map((item, index) => (
+                                <div key={index} className="flex items-center gap-4">
+                                  <div className="relative h-16 w-16 rounded-md overflow-hidden">
+                                    <Image
+                                      src={item.product.image_url || '/placeholder.png'}
+                                      alt={item.product.name}
+                                      fill
+                                      className="object-contain"
+                                    />
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="font-medium">{item.product.name}</p>
+                                    <p className="text-sm text-gray-500">
+                                      Quantité: {item.quantity} × {item.price} FCFA
+                                    </p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                            
+                            <Separator className="my-4" />
+                            
+                            <div className="flex justify-between items-center">
+                              <span className="font-medium">Total</span>
+                              <span className="font-medium text-green-600">
+                                {order.total.toLocaleString()} FCFA
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>

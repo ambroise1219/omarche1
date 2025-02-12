@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { verify } from 'jsonwebtoken'
+import { verifyAuth } from './lib/auth'
 
 // Routes qui nécessitent une authentification client
 const protectedClientRoutes = [
@@ -20,6 +21,12 @@ const publicRoutes = [
   '/api/auth/logout',
   '/auth',
   '/'
+]
+
+// Routes d'administration
+const adminRoutes = [
+  '/dashboard',
+  '/api/orders'
 ]
 
 // Vérifier si c'est une ressource statique
@@ -45,6 +52,11 @@ const isProtectedClientRoute = (path) => {
 // Vérifier si c'est une route publique
 const isPublicRoute = (path) => {
   return publicRoutes.some(route => path.startsWith(route))
+}
+
+// Vérifier si c'est une route admin
+const isAdminRoute = (path) => {
+  return adminRoutes.some(route => path.startsWith(route))
 }
 
 export async function middleware(request) {
@@ -131,6 +143,33 @@ export async function middleware(request) {
     }
   }
 
+  // Pour les routes d'administration
+  if (isAdminRoute(pathname)) {
+    const token = request.cookies.get('authToken')?.value
+
+    if (!token) {
+      return NextResponse.json(
+        { error: 'Non authentifié' },
+        { status: 401 }
+      )
+    }
+
+    try {
+      const decoded = await verifyAuth(token)
+      if (decoded.role !== 'admin') {
+        return NextResponse.json(
+          { error: 'Non autorisé' },
+          { status: 403 }
+        )
+      }
+    } catch (error) {
+      return NextResponse.json(
+        { error: 'Token invalide' },
+        { status: 401 }
+      )
+    }
+  }
+
   // Pour toutes les autres routes (e-commerce public)
   return NextResponse.next()
 }
@@ -138,5 +177,7 @@ export async function middleware(request) {
 export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon|robots.txt).*)',
+    '/dashboard/:path*',
+    '/api/orders/:path*'
   ],
 }

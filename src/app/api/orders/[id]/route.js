@@ -85,39 +85,42 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   try {
-    // Vérifier la session active
-    const token = request.cookies.get('auth_token')?.value;
-    if (!token) {
-      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
-    }
-
-    const decoded = await verifyAuth(token);
     const { id } = params;
     const { status } = await request.json();
+    
+    
 
-    // Vérifier si l'utilisateur est autorisé à modifier la commande
-    const orderCheck = await pool.query(
-      'SELECT user_id FROM orders WHERE id = $1',
-      [id]
-    );
+    // Récupérer le bon cookie
+    const token = request.cookies.get('authToken')?.value;
+     
 
-    if (orderCheck.rows.length === 0) {
-      return NextResponse.json({ error: 'Commande non trouvée' }, { status: 404 });
-    }
-
-    if (orderCheck.rows[0].user_id !== decoded.userId) {
-      return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
+    if (!token) {
+      console.log('❌ Pas de token trouvé');
+      return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
     }
 
     const result = await pool.query(
       'UPDATE orders SET status = $1 WHERE id = $2 RETURNING *',
       [status, id]
     );
-    
+
+    if (result.rows.length === 0) {
+     
+      return NextResponse.json(
+        { error: 'Commande non trouvée' },
+        { status: 404 }
+      );
+    }
+
+ 
     return NextResponse.json(result.rows[0]);
+
   } catch (error) {
-    console.error('Error updating order:', error);
-    return NextResponse.json({ error: 'Erreur lors de la mise à jour de la commande' }, { status: 500 });
+    console.error('❌ Erreur mise à jour commande:', error);
+    return NextResponse.json(
+      { error: 'Erreur lors de la mise à jour' },
+      { status: 500 }
+    );
   }
 }
 

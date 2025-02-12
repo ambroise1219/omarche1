@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 
 const AuthContext = createContext()
@@ -12,16 +12,22 @@ export function AuthProvider({ children }) {
   const pathname = usePathname()
 
   // Liste des routes protégées qui nécessitent une authentification
-  const protectedRoutes = ['/dashboard', '/profile']
+  const protectedRoutes = useMemo(() => ['/dashboard', '/profile'], [])
 
-  const checkAuth = async () => {
+  // Déplacer checkAuth dans useCallback pour éviter les re-rendus inutiles
+  const checkAuth = useCallback(async () => {
     try {
+      console.log('🔍 Vérification de la session...')
       const response = await fetch('/api/auth/me')
       const data = await response.json()
+      
+      console.log('📦 Réponse de /api/auth/me:', data)
 
       if (response.ok) {
+        console.log('✅ Session valide:', data.user)
         setUser(data.user)
       } else {
+        console.log('❌ Session invalide')
         setUser(null)
         // Rediriger uniquement si on est sur une route protégée
         if (protectedRoutes.some(route => pathname.startsWith(route))) {
@@ -29,16 +35,17 @@ export function AuthProvider({ children }) {
         }
       }
     } catch (error) {
-      console.error('Erreur vérification auth:', error)
+      console.error('🚨 Erreur vérification session:', error)
       setUser(null)
     } finally {
       setLoading(false)
     }
-  }
+  }, [pathname, router, protectedRoutes]) // Ajouter les dépendances nécessaires
 
   useEffect(() => {
+    console.log('🔄 Initialisation AuthContext')
     checkAuth()
-  }, [pathname]) // Ajouter pathname comme dépendance
+  }, [checkAuth]) // Utiliser checkAuth comme dépendance
 
   const login = async (email, password) => {
     try {
@@ -57,7 +64,7 @@ export function AuthProvider({ children }) {
         throw new Error(data.error || 'Erreur de connexion')
       }
 
-      console.log('AuthContext - Connexion réussie:', data.user)
+   
       setUser(data.user)
 
       // Vérifier immédiatement l'authentification après la connexion

@@ -4,22 +4,21 @@ import { Footer } from '../../../components/landing/Footer'
 import HeroCategory from '../../../components/category/HeroCategory'
 import CategoryProductCard from '../../../components/category/CategoryProductCard'
 import { notFound } from 'next/navigation'
-import { fetchCategoryById, fetchProductsByCategory } from '@/utils/api'
+import { getCategoryFromDB } from '@/utils/server-utils'
 
 async function getCategory(id) {
   try {
-    const [categoryData, productsData] = await Promise.all([
-      fetchCategoryById(id),
-      fetchProductsByCategory(id)
-    ])
-
-    return {
-      ...categoryData,
-      products: productsData
+    const category = await getCategoryFromDB(id);
+    
+    if (!category) {
+      console.log('❌ [Server] Catégorie non trouvée');
+      notFound();
     }
+
+    return category;
   } catch (error) {
-    console.error('Error fetching category:', error)
-    throw new Error('Failed to fetch category')
+    console.error('❌ [Server] Erreur:', error);
+    throw error;
   }
 }
 

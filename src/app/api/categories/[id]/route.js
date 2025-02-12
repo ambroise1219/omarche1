@@ -4,16 +4,54 @@ import pool from '../../../../../lib/db';
 export async function GET(request, { params }) {
   try {
     const { id } = params;
-    const result = await pool.query(
-      'SELECT * FROM categories WHERE id = $1',
-      [id]
-    );
+    
+
+    // Récupérer la catégorie et ses produits en une seule requête
+    const result = await pool.query(`
+      SELECT 
+        c.*,
+        json_agg(
+          json_build_object(
+            'id', p.id::text, -- Convertir en texte pour préserver la précision
+            'name', p.name,
+            'description', p.description,
+            'price', p.price,
+            'stock', p.stock,
+            'images', (
+              SELECT json_agg(json_build_object(
+                'id', pi.id::text, -- Convertir en texte
+                'image_url', pi.image_url
+              ))
+              FROM product_images pi
+              WHERE pi.product_id = p.id
+            )
+          )
+        ) as products
+      FROM categories c
+      LEFT JOIN products p ON c.id = p.category_id
+      WHERE c.id = $1
+      GROUP BY c.id
+    `, [id]);
+
     if (result.rows.length === 0) {
-      return NextResponse.json({ error: 'Category not found' }, { status: 404 });
+      console.log('❌ Catégorie non trouvée:', id);
+      return NextResponse.json(
+        { error: 'Catégorie non trouvée' }, 
+        { status: 404 }
+      );
     }
-    return NextResponse.json(result.rows[0]);
+
+    // Nettoyer les données pour gérer le cas où il n'y a pas de produits
+    const category = result.rows[0];
+    category.products = category.products[0] === null ? [] : category.products;
+ 
+    return NextResponse.json(category);
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('❌ Erreur:', error);
+    return NextResponse.json(
+      { error: error.message }, 
+      { status: 500 }
+    );
   }
 }
 

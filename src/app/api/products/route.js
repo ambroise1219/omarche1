@@ -54,14 +54,7 @@ export async function POST(request) {
     const body = await request.json();
     const { name, description, price, stock, category_id, images } = body;
 
-    console.log('Données reçues par l\'API:', {
-      name,
-      description,
-      price,
-      stock,
-      category_id,
-      type_category_id: typeof category_id
-    });
+  
 
     // Validation des données
     if (!name || !price || !stock || !category_id) {
@@ -72,14 +65,14 @@ export async function POST(request) {
     }
 
     // Vérifier si la catégorie existe
-    console.log('Recherche de la catégorie avec ID:', category_id);
+    
     
     const categoryExists = await pool.query(
       'SELECT id FROM categories WHERE id::text = $1',
       [category_id]
     );
 
-    console.log('Résultat de la recherche de catégorie:', categoryExists.rows);
+  
 
     if (categoryExists.rows.length === 0) {
       return NextResponse.json(

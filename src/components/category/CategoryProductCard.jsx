@@ -14,11 +14,23 @@ export default function CategoryProductCard({ product }) {
 
   if (!product) return null
 
+  // Vérifier et nettoyer les images et le prix
+  const imageUrl = product.images && Array.isArray(product.images) && product.images.length > 0
+    ? product.images[0].image_url
+    : '/placeholder.png';
+
+  const formattedPrice = product.price 
+    ? product.price.toLocaleString()
+    : 'Prix non disponible';
+
   const handleAddToCart = (e) => {
     e.preventDefault() // Empêcher la navigation
     addToCart(product, 1)
     toast.success('Produit ajouté au panier')
   }
+
+  // Vérifier l'ID avant de l'utiliser
+  const productId = typeof product?.id === 'string' ? product.id : String(product?.id || '');
 
   return (
     <motion.div
@@ -27,10 +39,10 @@ export default function CategoryProductCard({ product }) {
       viewport={{ once: true }}
       className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group"
     >
-      <Link href={`/produits/${product.id}`}>
+      <Link href={`/produits/${productId}`}> {/* Forcer la conversion en string */}
         <div className="relative h-56 overflow-hidden">
           <Image
-            src={product.images[0]?.image_url || '/placeholder.png'}
+            src={imageUrl}
             alt={product.name}
             fill
             className="object-contain group-hover:scale-110 transition-transform duration-300"
@@ -62,15 +74,15 @@ export default function CategoryProductCard({ product }) {
             {product.name}
           </h3>
           <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-            {product.description}
+            {product.description || 'Aucune description disponible'}
           </p>
           <div className="flex justify-between items-center">
             <div>
               <p className="text-orange-600 font-bold text-xl">
-                {product.price.toLocaleString()} FCFA
+                {formattedPrice} {product.price ? 'FCFA' : ''}
               </p>
               <p className="text-sm text-gray-500">
-                Stock: {product.stock}
+                Stock: {product.stock || 0}
               </p>
             </div>
             <div className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">

@@ -96,12 +96,18 @@ export async function fetchProductById(id) {
  */
 export async function fetchCategoryById(id) {
   try {
-    const data = await fetchWithRetry(`/api/categories/${id}`)
-    return data
+    console.log('📝 [Client] Récupération catégorie:', id);
+    const response = await fetch(`/api/categories/${id}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error('Erreur lors du chargement de la catégorie:', error)
-    toast.error("Impossible de charger les détails de la catégorie")
-    return null
+    console.error('❌ [Client] Erreur:', error);
+    return null;
   }
 }
 
@@ -112,11 +118,18 @@ export async function fetchCategoryById(id) {
  */
 export async function fetchProductsByCategory(categoryId) {
   try {
-    const data = await fetchWithRetry(`/api/categories/${categoryId}/products`)
-    return data
+    console.log('📝 Récupération produits de la catégorie:', categoryId);
+    const response = await fetch(`/api/products?category=${categoryId}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('✅ Produits trouvés:', data.length);
+    return data;
   } catch (error) {
-    console.error('Erreur lors du chargement des produits de la catégorie:', error)
-    toast.error("Impossible de charger les produits de cette catégorie")
-    return []
+    console.error('❌ Erreur fetchProductsByCategory:', error);
+    return [];
   }
 }

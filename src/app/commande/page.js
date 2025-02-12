@@ -36,18 +36,35 @@ export default function CommandePage() {
 
   // Charger les données de l'utilisateur connecté
   useEffect(() => {
+     
+    
     if (user) {
+      // Traitement du nom complet
+      const [firstName = '', lastName = ''] = (user.username || '').split(' ') || [];
+      
+      // Traitement de l'adresse
+      const [commune = '', ...restLocation] = (user.location || '').split(',');
+      const quartier = restLocation.join(',').trim();
+   
+  
       setFormData(prev => ({
         ...prev,
-        firstName: user.first_name || '',
-        lastName: user.last_name || '',
-        phone: user.phone || '',
-        commune: user.address?.commune || '',
-        quartier: user.address?.quartier || '',
-        addressDetails: user.address?.details || ''
-      }))
+        firstName,
+        lastName,
+        email: user.email || '',
+        phone: user.phone_number || '',
+        commune: commune || '',
+        quartier: quartier || '',
+        addressDetails: user.address || '',
+        paymentMethod: prev.paymentMethod
+      }));
     }
-  }, [user])
+  }, [user]);
+
+  // Log à chaque changement de formData
+  useEffect(() => {
+   
+  }, [formData]);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target
@@ -77,7 +94,7 @@ export default function CommandePage() {
         user: user || null
       };
 
-      console.log('📦 Données à envoyer:', orderData);
+     
 
       const response = await fetch('/api/orders', {
         method: 'POST',

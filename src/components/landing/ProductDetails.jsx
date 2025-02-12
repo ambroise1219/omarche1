@@ -8,7 +8,10 @@ import { Separator } from '../ui/separator'
 import { useCart } from '../../context/CartContext'  
 import { ProductImageSlider } from '../product/ProductImageSlider' 
 import { HeroProduct } from '../product/HeroProduct' 
-import { Truck, ShoppingCart, Star, Clock, Shield, ChevronRight } from 'lucide-react'
+import { Truck, ShoppingCart, Star, Clock, Shield, ChevronRight, QrCode, Phone, Gift, Download } from 'lucide-react'
+import { motion } from 'framer-motion'
+import Image from 'next/image'
+import Link from 'next/link'
 
 export default function ProductDetails({ product }) {
   const [quantity, setQuantity] = useState(1)
@@ -42,7 +45,73 @@ export default function ProductDetails({ product }) {
       {/* Contenu principal */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid lg:grid-cols-[380px_1fr_1fr] gap-8">
+            {/* Bannière promotionnelle verticale */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="hidden lg:block space-y-6 rounded-xl bg-gradient-to-b from-orange-50 to-orange-100/80 p-6"
+            >
+             <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="bg-white p-8 rounded-2xl shadow-lg">
+                <h3 className="text-2xl font-semibold mb-6">Téléchargez notre application</h3>
+                <p className="text-gray-600 mb-8">
+                  Profitez d&apos;une expérience d&apos;achat optimale avec notre application mobile.
+                  Disponible sur iOS et Android.
+                </p>
+                <div className="gap-4 items-center justify-center">
+                  <Link href="#">
+                    <Image
+                      src="/appstore.png"
+                      alt="Télécharger sur l'App Store"
+                      width={200}
+                      height={60}
+                      className="h-[60px] w-auto hover:scale-105 transition-transform duration-300 mb-4"
+                    />
+                  </Link>
+                  <Link href="#">
+                    <Image
+                      src="/playstore.png"
+                      alt="Télécharger sur le Play Store"
+                      width={200}
+                      height={60}
+                      className="h-[60px] w-auto hover:scale-105 transition-transform duration-300"
+                    />
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+
+              {/* Section Promotions */}
+              <div className="space-y-4">
+                <h3 className="font-bold text-xl text-orange-700">Offres Spéciales</h3>
+                <div className="space-y-3">
+                  <div className="p-4 bg-white rounded-lg shadow-sm">
+                    <Gift className="w-8 h-8 mb-2 text-orange-500" />
+                    <h4 className="font-semibold text-gray-800">-10% sur votre 1ère commande</h4>
+                    <p className="text-sm text-orange-600">Code: BIENVENUE</p>
+                  </div>
+                  <div className="p-4 bg-white rounded-lg shadow-sm">
+                    <Download className="w-8 h-8 mb-2 text-orange-500" />
+                    <h4 className="font-semibold text-gray-800">Livraison gratuite</h4>
+                    <p className="text-sm text-orange-600">Dès 10 000 FCFA</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Badge Confiance */}
+              <div className="pt-4">
+                <div className="p-4 bg-white rounded-lg shadow-sm text-center">
+                  <div className="font-semibold text-gray-800 mb-1">100% Sécurisé</div>
+                  <p className="text-sm text-orange-600">Paiement & livraison sécurisés</p>
+                </div>
+              </div>
+            </motion.div>
+
             {/* Images du produit */}
             <div>
               <ProductImageSlider images={product?.images || []} />
@@ -148,10 +217,7 @@ export default function ProductDetails({ product }) {
       {/* Informations supplémentaires */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-8 text-center">
-              Informations détaillées
-            </h2>
+          <div className="max-w-4xl mx-auto space-y-16">
             <div className="grid md:grid-cols-2 gap-8">
               <Card className="p-6">
                 <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -183,6 +249,56 @@ export default function ProductDetails({ product }) {
                 </ul>
               </Card>
             </div>
+
+            {/* Nouvelle bannière promotionnelle horizontale */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8"
+            >
+              
+
+              {/* Promo */}
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-green-500/90 to-green-400/90 p-6 text-white">
+                <div className="relative z-10">
+                  <Gift className="w-12 h-12 mb-4" />
+                  <h3 className="text-xl font-bold mb-2">-10% sur votre 1ère commande</h3>
+                  <p className="text-sm text-white/80 mb-4">Pour toute nouvelle inscription</p>
+                  <div className="inline-block bg-white/20 rounded-lg px-4 py-2">
+                    <span className="font-mono text-lg">BIENVENUE</span>
+                  </div>
+                </div>
+                <Image
+                  src="/promo-bg.png"
+                  alt="Promo"
+                  width={150}
+                  height={150}
+                  className="absolute -right-10 -bottom-10 opacity-30"
+                />
+              </div>
+
+              {/* Livraison */}
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500/90 to-orange-400/90 p-6 text-white">
+                <div className="relative z-10">
+                  <Truck className="w-12 h-12 mb-4" />
+                  <h3 className="text-xl font-bold mb-2">Livraison gratuite</h3>
+                  <p className="text-white/80 mb-4">
+                    Pour toute commande supérieure à 10 000 FCFA
+                  </p>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Shield className="w-4 h-4" />
+                    <span>Livraison express sécurisée</span>
+                  </div>
+                </div>
+                <Image
+                  src="/delivery-bg.png"
+                  alt="Livraison"
+                  width={180}
+                  height={180}
+                  className="absolute -right-10 -bottom-10 opacity-30 rotate-12"
+                />
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>

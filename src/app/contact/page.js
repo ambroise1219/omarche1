@@ -105,7 +105,7 @@ export default function ContactPage() {
                         Koumassi, Remblais
                       </p>
                       <p className="text-muted-foreground">
-                        Abidjan, Côte d'Ivoire
+                        Abidjan, Côte d&apos;Ivoire
                       </p>
                     </div>
                   </motion.div>

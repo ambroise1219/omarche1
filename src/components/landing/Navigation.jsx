@@ -63,9 +63,10 @@ export function Navigation() {
                 <Image
                   src="/logo.webp"
                   alt="Omarche Logo"
-                  className="object-contain p-1"
-                  width={200}  
-                  height={200}
+                  width={200}
+                  height={60} // Définir une hauteur fixe
+                  className="object-contain w-auto h-auto" // Maintenir le ratio
+                  priority // Charger en priorité car c'est le LCP
                 />
               </div>
             </div>
@@ -111,15 +112,18 @@ export function Navigation() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel>
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.username}</p>
-                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                      <div className="flex flex-col space-y-1 bg-amber-400 py-2 rounded-lg">
+                        <p className="text-sm font-medium leading-none text-center text-slate-700">{user.username}</p>
+                        
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => router.push('/profile')}>
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Profile</span>
+                    <DropdownMenuItem >
+                      <Link href={`/profile`} className='flex flex-row items-center justify-center '>
+                      <User className="mr-2 h-4 w-4 " />
+                      <span>Mon Profil</span>
+                      </Link>
+                     
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
@@ -208,7 +212,7 @@ export function Navigation() {
                         </Avatar>
                         <div>
                           <p className="text-sm font-medium text-white">{user.username}</p>
-                          <p className="text-xs text-white/60">{user.email}</p>
+                         
                         </div>
                       </div>
                     </Link>

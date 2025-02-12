@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O'Marché API Documentation</title>
+    <style>
+        :root {
+            --primary: #f97316;
+            --text: #333;
+            --bg: #f8f9fa;
+            --code-bg: #272822;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        nav {
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .endpoint {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .endpoint h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+
+        .get { background: #e3f2fd; color: #1976d2; }
+        .post { background: #e8f5e9; color: #388e3c; }
+        .put { background: #fff3e0; color: #f57c00; }
+        .delete { background: #ffebee; color: #d32f2f; }
+
+        code {
+            background: var(--code-bg);
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 6px;
+            display: block;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: var(--text);
+        }
+
+        .tab.active {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">O'Marché API</div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section id="auth">
+            <h2>Authentification</h2>
+            
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    /auth/login
+                </h3>
+                <code>
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+                </code>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    /auth/register
+                </h3>
+                <code>
+{
+  "username": "john_doe",
+  "email": "user@example.com",
+  "password": "password123"
+}
+                </code>
+            </div>
+        </section>
+
+        <section id="products">
+            <h2>Produits</h2>
+            
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    /products
+                </h3>
+                <p>Query params: search, category, page, limit</p>
+            </div>
+
+            <div class="endpoint">
+                <h3>
+                    <span class="method get">GET</span>
+                    /products/{id}
+                </h3>
+            </div>
+        </section>
+
+        <section id="cart">
+            <h2>Panier</h2>
+            
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    /cart
+                </h3>
+                <code>
+{
+  "product_id": "123",
+  "quantity": 1
+}
+                </code>
+            </div>
+        </section>
+
+        <section id="orders">
+            <h2>Commandes</h2>
+            
+            <div class="endpoint">
+                <h3>
+                    <span class="method post">POST</span>
+                    /orders
+                </h3>
+                <code>
+{
+  "items": [
+    {
+      "product_id": "123",
+      "quantity": 2
+    }
+  ],
+  "shipping_address": "123 Main St"
+}
+                </code>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Ajouter la coloration syntaxique si nécessaire
+        document.querySelectorAll('code').forEach(block => {
+            try {
+                const content = block.textContent;
+                block.textContent = JSON.stringify(JSON.parse(content), null, 2);
+            } catch (e) {}
+        });
+    </script>
+</body>
+</html>

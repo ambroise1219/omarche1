@@ -57,7 +57,7 @@ export default function HomePage() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
-            Pourquoi Choisir O'Marché
+            Pourquoi Choisir O&apos;Marché
           </motion.h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
@@ -127,7 +127,7 @@ export default function HomePage() {
                 Dans quelles villes livrez-vous ?
               </AccordionTrigger>
               <AccordionContent>
-                Nous livrons actuellement dans toute la ville d'Abidjan et ses communes. L'extension vers d'autres villes est prévue prochainement.
+                Nous livrons actuellement dans toute la ville d&apos;Abidjan et ses communes. L&apos;extension vers d&apos;autres villes est prévue prochainement.
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="suivi">
@@ -200,7 +200,7 @@ export default function HomePage() {
               <div className="bg-white p-8 rounded-2xl shadow-lg">
                 <h3 className="text-2xl font-semibold mb-6">Téléchargez notre application</h3>
                 <p className="text-gray-600 mb-8">
-                  Profitez d'une expérience d'achat optimale avec notre application mobile.
+                  Profitez d&apos;une expérience d&apos;achat optimale avec notre application mobile.
                   Disponible sur iOS et Android.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">

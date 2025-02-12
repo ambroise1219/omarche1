@@ -108,7 +108,7 @@ export default function AuthPage() {
               {isLogin ? 'Connectez-vous pour accéder à votre compte' : 'Créez votre compte pour commencer vos achats'}
             </p>
             <p className="text-sm opacity-90">
-              Rejoignez notre communauté et profitez d'une expérience d'achat unique
+              Rejoignez notre communauté et profitez d&apos;une expérience d&apos;achat unique
             </p>
           </motion.div>
 
@@ -123,7 +123,7 @@ export default function AuthPage() {
                 {!isLogin && (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="username">Nom d'utilisateur</Label>
+                      <Label htmlFor="username">Nom d&apos;utilisateur</Label>
                       <Input
                         id="username"
                         name="username"

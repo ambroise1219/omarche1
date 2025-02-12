@@ -1,9 +1,0 @@
-
-CREATE TABLE IF NOT EXISTS password_resets (
-  id BIGINT PRIMARY KEY DEFAULT unique_rowid(),
-  user_id BIGINT REFERENCES users(id),
-  token VARCHAR(255) NOT NULL,
-  expires_at TIMESTAMP NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  used_at TIMESTAMP
-);

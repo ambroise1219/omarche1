@@ -46,6 +46,7 @@ import {
 } from "../ui/dialog"
 import { Badge } from "../ui/badge"
 import { toast } from "sonner"
+import Image from "next/image"
 
 const statusConfig = {
   completed: { label: "Terminée", color: "green" },
@@ -87,23 +88,37 @@ export default function OrdersContent() {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
+      console.log('📝 Tentative mise à jour statut:', { orderId, newStatus });
+      
       const response = await fetch(`/api/orders/${orderId}`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status: newStatus }),
+        credentials: 'include', // Important pour envoyer les cookies
+        body: JSON.stringify({
+          orderId,
+          status: newStatus
+        })
       });
 
+      console.log('🔄 Statut réponse:', response.status);
+
+      const data = await response.json();
+      console.log('📦 Réponse:', data);
+
       if (!response.ok) {
-        throw new Error("Erreur lors de la mise à jour du statut");
+        throw new Error(data.error || "Erreur lors de la mise à jour du statut");
       }
 
       toast.success(`Statut mis à jour : ${statusConfig[newStatus].label}`);
-      fetchOrders();
+      await fetchOrders();
     } catch (error) {
-      console.error("Erreur:", error);
-      toast.error("Erreur lors de la mise à jour du statut");
+      console.error("❌ Erreur mise à jour:", error);
+      if (error.message === 'Non authentifié') {
+        router.push('/auth');
+      }
+      toast.error(error.message);
     }
   }
 
@@ -175,7 +190,9 @@ export default function OrdersContent() {
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
+                  <TableHead>Produits</TableHead>
                   <TableHead>Client</TableHead>
+                  <TableHead>Contact</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Total</TableHead>
                   <TableHead>Statut</TableHead>
@@ -202,19 +219,44 @@ export default function OrdersContent() {
                 ) : (
                   filteredOrders.map((order) => (
                     <TableRow key={order.id}>
-                      <TableCell className="font-medium">#{order.id}</TableCell>
+                      <TableCell>#{order.id}</TableCell>
+                      <TableCell>
+                        <div className="space-y-2">
+                          {order.items.map((item, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <div className="relative h-10 w-10 rounded overflow-hidden">
+                                <Image 
+                                  src={item.product.image_url || '/placeholder.png'}
+                                  alt={item.product.name}
+                                  fill
+                                  className="object-contain"
+                                />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">{item.product.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {item.quantity}x - {item.price.toLocaleString()} FCFA
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <div>
-                          <div className="font-medium">{order.username}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {order.email}
-                          </div>
+                          <p className="font-medium">{order.username}</p>
+                          <p className="text-sm text-muted-foreground">{order.email}</p>
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        <p className="text-sm">{order.phone_number}</p>
                       </TableCell>
                       <TableCell>
                         {format(new Date(order.created_at), "PPp", { locale: fr })}
                       </TableCell>
-                      <TableCell>{order.total.toLocaleString()} CFA</TableCell>
+                      <TableCell className="font-medium">
+                        {order.total.toLocaleString()} FCFA
+                      </TableCell>
                       <TableCell>
                         <StatusBadge status={order.status} />
                       </TableCell>
