@@ -21,10 +21,10 @@ export function AuthProvider({ children }) {
       const response = await fetch('/api/auth/me')
       const data = await response.json()
       
-      console.log('📦 Réponse de /api/auth/me:', data)
+      
 
       if (response.ok) {
-        console.log('✅ Session valide:', data.user)
+       
         setUser(data.user)
       } else {
         console.log('❌ Session invalide')
@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
         }
       }
     } catch (error) {
-      console.error('🚨 Erreur vérification session:', error)
+    
       setUser(null)
     } finally {
       setLoading(false)
@@ -43,7 +43,7 @@ export function AuthProvider({ children }) {
   }, [pathname, router, protectedRoutes]) // Ajouter les dépendances nécessaires
 
   useEffect(() => {
-    console.log('🔄 Initialisation AuthContext')
+    
     checkAuth()
   }, [checkAuth]) // Utiliser checkAuth comme dépendance
 
@@ -102,7 +102,7 @@ export function AuthProvider({ children }) {
         throw new Error(data.error || 'Erreur d\'inscription')
       }
 
-      console.log('AuthContext - Inscription réussie:', data)
+       
       setUser(data.user)
       router.push('/profile')
 
