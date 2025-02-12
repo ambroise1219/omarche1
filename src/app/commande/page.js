@@ -26,6 +26,7 @@ export default function CommandePage() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    email: '', // Ajout du champ email
     phone: '',
     commune: '',
     quartier: '',
@@ -57,80 +58,65 @@ export default function CommandePage() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      // Créer l'objet de commande
+      // Préparer les données de la commande
       const orderData = {
-        user_id: user?.id || null, // ID de l'utilisateur si connecté
-        username: `${formData.firstName} ${formData.lastName}`,
-        total: getCartTotal() + 1000,
-        status: 'pending',
-        items: cart.map(item => ({
+        formData: {
+          ...formData,
+          email: user?.email || formData.email || '', // Ajout du champ email
+        },
+        cartItems: cart.map(item => ({
           product_id: item.id,
           quantity: item.quantity,
           price: item.price
-        }))
-      }
+        })),
+        total: getCartTotal() + 1000,
+        user: user || null
+      };
 
-      // Envoyer la commande
-      const orderResponse = await fetch('/api/orders', {
+      console.log('📦 Données à envoyer:', orderData);
+
+      const response = await fetch('/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(orderData)
-      })
+      });
 
-      if (!orderResponse.ok) {
-        throw new Error('Erreur lors de la création de la commande')
-      }
-
-      const order = await orderResponse.json()
-
-      // Créer la livraison
-      const deliveryData = {
-        order_id: order.id,
-        status: 'pending',
-        delivery_details: {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phone: formData.phone,
-          address: {
-            commune: formData.commune,
-            quartier: formData.quartier,
-            details: formData.addressDetails
-          },
-          paymentMethod: formData.paymentMethod
+      const data = await response.json();
+      
+      if (!response.ok) {
+        if (data.type === "EMAIL_EXISTS" && data.role === 'guest') {
+          toast.error(
+            <div>
+              <p>Cet email existe déjà.</p>
+              <Button 
+                variant="link" 
+                onClick={() => router.push('/changermotdepasse')}
+              >
+                Cliquez ici pour réinitialiser votre mot de passe
+              </Button>
+            </div>
+          );
+          return;
         }
-      }
-
-      const deliveryResponse = await fetch('/api/deliveries', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(deliveryData)
-      })
-
-      if (!deliveryResponse.ok) {
-        throw new Error('Erreur lors de la création de la livraison')
+        throw new Error(data.error);
       }
 
       // Succès
-      toast.success('Commande confirmée ! Nous vous contacterons bientôt pour la livraison.')
+      toast.success('Commande créée avec succès');
+      clearCart();
+      router.push(`/commande/confirmation/${data.orderId}`);
 
-      // Vider le panier
-      clearCart()
-
-      // Rediriger vers une page de confirmation
-      router.push(`/commande/confirmation/${order.id}`)
     } catch (error) {
-      console.error('Erreur:', error)
-      toast.error('Une erreur est survenue lors de la commande. Veuillez réessayer.')
+      console.error('❌ Erreur:', error);
+      toast.error(error.message || 'Une erreur est survenue');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -196,6 +182,17 @@ export default function CommandePage() {
                       </div>
                     </div>
                     <div className="space-y-2 mt-4">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="exemple@email.com"
+                      />
+                    </div>
+                    <div className="space-y-2 mt-4">
                       <Label htmlFor="phone">Téléphone</Label>
                       <div className="flex items-center space-x-2">
                         <Phone className="h-5 w-5 text-gray-400" />
@@ -236,7 +233,7 @@ export default function CommandePage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="addressDetails">Détails de l'adresse</Label>
+                        <Label htmlFor="addressDetails">Détails de l&apos;adresse</Label>
                         <Textarea 
                           id="addressDetails"
                           placeholder="Précisions sur l'adresse de livraison..."

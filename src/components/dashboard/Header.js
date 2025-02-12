@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
-import { Avatar, AvatarFallback } from "../ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { Badge } from '../ui/badge'
 import { Input } from '../ui/input'
 
@@ -91,8 +91,12 @@ export default function Header({ user }) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center space-x-2">
                 <Avatar className="h-8 w-8">
+                  <AvatarImage 
+                    src={`https://api.dicebear.com/7.x/micah/svg?seed=${user?.username}`} 
+                    alt={user?.username} 
+                  />
                   <AvatarFallback className="bg-custom-orange text-white">
-                    {user?.username?.charAt(0)?.toUpperCase() || 'A'}
+                    {user?.username?.substring(0, 2).toUpperCase() || 'AD'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex items-center">

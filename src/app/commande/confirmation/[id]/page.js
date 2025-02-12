@@ -86,7 +86,7 @@ export default function OrderConfirmationPage({ params }) {
                 <div className="bg-blue-50 rounded-lg p-4">
                   <div className="flex items-center gap-3 text-blue-600 mb-2">
                     <Phone className="h-5 w-5" />
-                    <span className="font-medium">Besoin d'aide ?</span>
+                    <span className="font-medium">Besoin d&apos;aide ?</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     Notre service client est disponible pour vous aider.

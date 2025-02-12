@@ -1,52 +1,44 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 const AuthContext = createContext()
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const pathname = usePathname()
 
-  // Vérifier l'état de l'authentification au chargement
-  useEffect(() => {
-    checkAuth()
-  }, [])
+  // Liste des routes protégées qui nécessitent une authentification
+  const protectedRoutes = ['/dashboard', '/profile']
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/me', {
-        credentials: 'include'
-      })
-      
+      const response = await fetch('/api/auth/me')
+      const data = await response.json()
+
       if (response.ok) {
-        const data = await response.json()
-        console.log('AuthContext - Utilisateur vérifié:', data)
         setUser(data.user)
       } else {
-        const error = await response.json()
-        console.log('AuthContext - Erreur d\'authentification:', error)
         setUser(null)
-        
-        // Si on est sur une page protégée, rediriger vers la page de connexion
-        if (window.location.pathname !== '/auth') {
-          router.push('/auth?redirectTo=' + window.location.pathname)
+        // Rediriger uniquement si on est sur une route protégée
+        if (protectedRoutes.some(route => pathname.startsWith(route))) {
+          router.push('/auth')
         }
       }
     } catch (error) {
-      console.error('AuthContext - Erreur de vérification:', error)
+      console.error('Erreur vérification auth:', error)
       setUser(null)
-      
-      // Si on est sur une page protégée, rediriger vers la page de connexion
-      if (window.location.pathname !== '/auth') {
-        router.push('/auth?redirectTo=' + window.location.pathname)
-      }
     } finally {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    checkAuth()
+  }, [pathname]) // Ajouter pathname comme dépendance
 
   const login = async (email, password) => {
     try {
@@ -144,7 +136,7 @@ export const AuthProvider = ({ children }) => {
   )
 }
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
     throw new Error('useAuth doit être utilisé à l\'intérieur d\'un AuthProvider')

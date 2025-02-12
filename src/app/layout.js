@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google"
 import { Outfit } from "next/font/google"
 import { Inter, Paytone_One } from 'next/font/google'
 import { ClientProviders } from '../components/providers/client-providers'
+import { AuthProvider } from '@/context/AuthContext'
+import { CartProvider } from '@/context/CartContext'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,14 +47,13 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="fr" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} ${inter.className} ${paytoneOne.variable} antialiased`}
-        suppressHydrationWarning
-      >
-        <ClientProviders>
-          {children}
-        </ClientProviders>
+    <html lang="fr">
+      <body>
+        <AuthProvider>
+          <CartProvider>
+            {children}
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   )
