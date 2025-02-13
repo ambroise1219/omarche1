@@ -65,7 +65,7 @@ export function Navigation() {
                   alt="Omarche Logo"
                   width={200}
                   height={60} // Définir une hauteur fixe
-                  className="object-contain w-auto h-auto" // Maintenir le ratio
+                  className="object-contain  " // Maintenir le ratio
                   priority // Charger en priorité car c'est le LCP
                 />
               </div>

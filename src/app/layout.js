@@ -1,8 +1,5 @@
 import './globals.css'
-import { Geist, Geist_Mono } from "next/font/google"
-import { Outfit } from "next/font/google"
-import { Inter, Paytone_One } from 'next/font/google'
-import { ClientProviders } from '../components/providers/client-providers'
+import { Geist, Geist_Mono, Outfit, Inter, Paytone_One } from "next/font/google"
 import { AuthProvider } from '@/context/AuthContext'
 import { CartProvider } from '@/context/CartContext'
 

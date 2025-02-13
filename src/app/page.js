@@ -21,6 +21,8 @@ import { HeroCarousel } from "../components/landing/HeroCarousel"
 import { Navigation } from "../components/landing/Navigation"
 import { MapSection } from "../components/landing/MapSection"
 import { Footer } from "../components/landing/Footer"
+import { AuthProvider } from '@/context/AuthContext'
+import { CartProvider } from '@/context/CartContext'
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
