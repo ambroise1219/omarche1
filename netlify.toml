@@ -31,5 +31,16 @@
 [build.processing]
   skip_processing = true
 
-[edge_functions]
-  import_modules = ["jsonwebtoken"]
+[[edge_functions]]
+  function = "auth"
+  path = "/auth/*"
+
+[[edge_functions]]
+  function = "middleware"
+  path = "/*"
+
+[functions.auth]
+  external_node_modules = ["jsonwebtoken"]
+
+[functions.middleware]
+  external_node_modules = ["jsonwebtoken"]
