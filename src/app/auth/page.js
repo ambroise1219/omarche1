@@ -7,7 +7,7 @@ import AuthForm from '../../components/auth/AuthForm'
 
 export default function AuthPage() {
   return (
-    <Suspense fallback={<div>Chargement...</div>}>
+    <Suspense fallback={<div>Chargement en cours...</div>}>
       <Navigation />
       <AuthForm />
       <Footer />
