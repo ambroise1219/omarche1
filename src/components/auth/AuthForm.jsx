@@ -1,51 +1,72 @@
 'use client'
 
-import React from 'react'
-import { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { toast } from 'sonner'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
+import { Button } from '../../components/ui/button'  
+import { Input } from '../../components/ui/input' 
+import { Label } from '../../components/ui/label'
+import { Card } from '../../components/ui/card'
 import Link from 'next/link'
-import { useAuth } from '@/context/AuthContext'
-import { Mail, Lock, UserPlus, UserCheck } from 'lucide-react'
+import Image from 'next/image'
+import { Navigation } from '../../components/landing/Navigation'
+import { Footer } from '../../components/landing/Footer'
+import { useAuth } from '../../context/AuthContext'
+import { toast } from 'sonner'
+import { Suspense } from 'react'
 
-const tabs = {
-  login: {
-    title: 'Connexion',
-    icon: <UserCheck className="w-6 h-6" />,
-    buttonText: 'Se connecter'
-  },
-  register: {
-    title: 'Inscription',
-    icon: <UserPlus className="w-6 h-6" />,
-    buttonText: 'S\'inscrire'
-  }
-}
-
-export default function AuthForm(props) {
-  const { mode = 'login' } = props
+export default function AuthForm() {
+  const router = useRouter()
   const searchParams = useSearchParams()
+  const { login, register, user } = useAuth()
+  const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
-  const { login, register } = useAuth()
-
   const [formData, setFormData] = useState({
-    username: '',
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: '',
+    username: '',
+    phoneNumber: '', 
   })
+
+  useEffect(() => {
+    const mode = searchParams.get('mode')
+    setIsLogin(mode !== 'register')
+  }, [searchParams])
+
+  // Rediriger si déjà connecté
+  useEffect(() => {
+    if (user) {
+      // Récupérer l'URL de redirection depuis les paramètres
+      const redirectTo = searchParams.get('redirectTo')
+      router.push(redirectTo || '/')
+    }
+  }, [user, router, searchParams])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
 
     try {
-      if (mode === 'login') {
+      if (isLogin) {
+        // Connexion
         await login(formData.email, formData.password)
         toast.success('Connexion réussie')
       } else {
-        await register(formData)
+        // Inscription
+        if (formData.password !== formData.confirmPassword) {
+          toast.error('Les mots de passe ne correspondent pas')
+          return
+        }
+
+        const userData = {
+          email: formData.email,
+          password: formData.password,
+          username: formData.username,
+          phoneNumber: formData.phoneNumber
+        }
+
+        await register(userData)
         toast.success('Inscription réussie')
       }
     } catch (error) {
@@ -56,111 +77,144 @@ export default function AuthForm(props) {
     }
   }
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
-        {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Tabs */}
-          <div className="flex">
-            {Object.entries(tabs).map(([key, { title, icon }]) => (
-              <button
-                key={key}
-                onClick={() => setMode(key)}
-                className={`flex-1 py-4 flex items-center justify-center gap-2 transition-colors ${
-                  mode === key
-                    ? 'bg-orange-500 text-white'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                }`}
-              >
-                {icon}
-                <span className="font-medium">{title}</span>
-              </button>
-            ))}
-          </div>
+    <Suspense fallback={<div>Chargement...</div>}>
+ 
+      <div className="min-h-screen bg-gradient-to-br from-green-700 to-green-500 flex items-center justify-center p-4">
+        <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8 items-center">
+          {/* Section gauche - Logo et texte */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center md:text-left text-white"
+          >
+            <div className="flex items-center justify-center md:justify-start gap-4 mb-8">
+               <Image 
+                src="/logo.webp"
+                alt="Logo"
+                width={200}
+                height={200} 
+             />
+            </div>
+            <p className="text-xl mb-4">
+              {isLogin ? 'Connectez-vous pour accéder à votre compte' : 'Créez votre compte pour commencer vos achats'}
+            </p>
+            <p className="text-sm opacity-90">
+              Rejoignez notre communauté et profitez d&apos;une expérience d&apos;achat unique
+            </p>
+          </motion.div>
 
-          {/* Form */}
-          <div className="p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {mode === 'register' && (
+          {/* Section droite - Formulaire */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="p-6">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {!isLogin && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="username">Nom d&apos;utilisateur</Label>
+                      <Input
+                        id="username"
+                        name="username"
+                        type="text"
+                        required
+                        value={formData.username}
+                        onChange={handleInputChange}
+                        placeholder="Votre nom d'utilisateur"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phoneNumber">Numéro de téléphone</Label>
+                      <Input
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        type="tel"
+                        required
+                        value={formData.phoneNumber}
+                        onChange={handleInputChange}
+                        placeholder="+33612345678"
+                      />
+                    </div>
+                  </>
+                )}
+
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Nom d&apos;utilisateur
-                  </label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
-                    type="text"
-                    value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    required
-                    disabled={loading}
-                    className="w-full"
-                    placeholder="John Doe"
-                  />
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <Input
+                    id="email"
+                    name="email"
                     type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
-                    disabled={loading}
-                    className="pl-10"
-                    placeholder="vous@exemple.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="votre@email.com"
                   />
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Mot de passe
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <div className="space-y-2">
+                  <Label htmlFor="password">Mot de passe</Label>
                   <Input
+                    id="password"
+                    name="password"
                     type="password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
-                    disabled={loading}
-                    className="pl-10"
+                    value={formData.password}
+                    onChange={handleInputChange}
                     placeholder="••••••••"
                   />
                 </div>
-              </div>
 
-              <Button
-                type="submit"
-                className="w-full bg-orange-500 hover:bg-orange-600"
-                disabled={loading}
-              >
-                {loading ? 'Chargement...' : tabs[mode].buttonText}
-              </Button>
-            </form>
+                {!isLogin && (
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      required
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      placeholder="••••••••"
+                    />
+                  </div>
+                )}
 
-            {mode === 'login' && (
-              <div className="mt-4 text-center">
-                <Link
-                  href="/reset-password"
-                  className="text-sm text-orange-600 hover:text-orange-500"
+                <Button 
+                  type="submit" 
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                  disabled={loading}
                 >
-                  Mot de passe oublié ?
-                </Link>
-              </div>
-            )}
-          </div>
+                  {loading ? 'Chargement...' : isLogin ? 'Se connecter' : 'S\'inscrire'}
+                </Button>
+
+                <div className="text-center mt-4">
+                  <Link
+                    href={isLogin ? '/auth?mode=register' : '/auth?mode=login'}
+                    className="text-black hover:text-orange-500 text-sm"
+                  >
+                    {isLogin
+                      ? "Pas encore de compte ? S'inscrire"
+                      : 'Déjà un compte ? Se connecter'}
+                  </Link>
+                </div>
+              </form>
+            </Card>
+          </motion.div>
         </div>
-      </motion.div>
-    </div>
+      </div>
+ 
+    </Suspense>
   )
 }
