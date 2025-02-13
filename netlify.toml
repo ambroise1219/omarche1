@@ -15,7 +15,6 @@
   external_node_modules = ["@node-rs/bcrypt", "bcrypt", "jsonwebtoken"]
   included_files = [
     "node_modules/bcrypt/**",
-    "node_modules/jsonwebtoken/**",
     ".env",
     ".env.production",
     ".env.local",
@@ -30,17 +29,3 @@
 
 [build.processing]
   skip_processing = true
-
-[[edge_functions]]
-  function = "auth"
-  path = "/auth/*"
-
-[[edge_functions]]
-  function = "middleware"
-  path = "/*"
-
-[functions.auth]
-  external_node_modules = ["jsonwebtoken"]
-
-[functions.middleware]
-  external_node_modules = ["jsonwebtoken"]
