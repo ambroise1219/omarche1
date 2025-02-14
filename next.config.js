@@ -9,7 +9,14 @@ const nextConfig = {
   },
   webpack: (config) => {
     config.externals = [...config.externals, 'bcrypt', 'jsonwebtoken']
+    config.resolve.extensionAlias = {
+      '.js': ['.js', '.ts', '.tsx'],
+      '.jsx': ['.jsx', '.tsx']
+    }
     return config
+  },
+  experimental: {
+    esmExternals: true
   }
 }
 

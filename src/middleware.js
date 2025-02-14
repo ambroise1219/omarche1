@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { verify } from 'jsonwebtoken'
+import * as jose from 'jose'
 
 // Routes qui nécessitent une authentification client
 const protectedClientRoutes = [
@@ -76,14 +76,17 @@ export async function middleware(request) {
     }
 
     try {
-      // Vérifier le token
-      const decoded = verify(authToken, process.env.JWT_SECRET)
-      console.log('Middleware - Token vérifié avec succès:', { userId: decoded.userId })
+      // Création d'une clé secrète pour la vérification
+      const secretKey = new TextEncoder().encode(process.env.JWT_SECRET)
+      
+      // Vérifier le token avec jose
+      const { payload } = await jose.jwtVerify(authToken, secretKey)
+      console.log('Middleware - Token vérifié avec succès:', { userId: payload.userId })
       
       // Si le token est valide, permettre l'accès
       const requestHeaders = new Headers(request.headers)
-      requestHeaders.set('x-user-id', decoded.userId)
-      requestHeaders.set('x-user-email', decoded.email)
+      requestHeaders.set('x-user-id', payload.userId)
+      requestHeaders.set('x-user-email', payload.email)
 
       // Cloner la requête avec les nouveaux headers
       const response = NextResponse.next({
@@ -111,14 +114,16 @@ export async function middleware(request) {
     } catch (error) {
       console.error('Middleware - Erreur de vérification du token:', error)
       
-      // Si le token est invalide, supprimer le cookie et rediriger
+      // En cas d'erreur de token, rediriger vers la page de connexion
       const response = NextResponse.redirect(new URL('/auth', request.url))
+      
+      // Supprimer le cookie invalide
       response.cookies.set('authToken', '', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         path: '/',
-        expires: new Date(0)
+        maxAge: 0
       })
 
       // Désactiver le cache pour la redirection
@@ -131,7 +136,7 @@ export async function middleware(request) {
     }
   }
 
-  // Pour toutes les autres routes (e-commerce public)
+  // Pour toutes les autres routes, permettre l'accès
   return NextResponse.next()
 }
 

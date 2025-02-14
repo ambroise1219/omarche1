@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O'Marché API Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">O'Marché API Test</h1>
+
+        <!-- Console de debug -->
+        <div class="mb-8 p-4 bg-black text-white rounded-lg">
+            <h3 class="text-xl mb-2">Console de Debug</h3>
+            <pre id="debug" class="whitespace-pre-wrap"></pre>
+        </div>
+
+        <!-- Status -->
+        <div id="status" class="mb-8 p-4 bg-yellow-100 text-yellow-800 rounded-lg">
+            Chargement des données...
+        </div>
+
+        <!-- Catégories -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Catégories</h2>
+            <div id="categories" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Les catégories seront insérées ici -->
+            </div>
+        </div>
+
+        <!-- Produits -->
+        <div class="mb-12">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Produits</h2>
+            <div id="products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Les produits seront insérés ici -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://omarche225.vercel.app/api';
+        const debug = document.getElementById('debug');
+        const status = document.getElementById('status');
+
+        function log(message) {
+            const timestamp = new Date().toISOString();
+            const logMessage = `[${timestamp}] ${message}`;
+            console.log(logMessage);
+            debug.innerHTML += logMessage + '\n';
+        }
+
+        const fetchConfig = {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                // Remplacez 3001 par le port que le serveur vous indique
+                'Origin': `http://localhost:${port}`
+            },
+            mode: 'cors',
+            credentials: 'omit',
+            cache: 'no-cache'
+        };
+
+        async function loadCategories() {
+            try {
+                log('🔄 Chargement des catégories...');
+                log(`🌐 URL: ${API_URL}/categories`);
+                log(`📤 Headers: ${JSON.stringify(fetchConfig.headers, null, 2)}`);
+                
+                const response = await fetch(`${API_URL}/categories`, fetchConfig);
+                
+                log(`📥 Response Status: ${response.status} ${response.statusText}`);
+                log(`📥 Response Headers: ${JSON.stringify(Object.fromEntries([...response.headers]), null, 2)}`);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const text = await response.text();
+                log(`📥 Raw Response: ${text}`);
+                
+                const categories = JSON.parse(text);
+                log(`✅ Catégories reçues: ${JSON.stringify(categories, null, 2)}`);
+                
+                const container = document.getElementById('categories');
+                
+                if (categories.length === 0) {
+                    container.innerHTML = '<p class="col-span-3 text-center text-gray-500">Aucune catégorie trouvée</p>';
+                    return;
+                }
+
+                container.innerHTML = categories.map(category => `
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">${category.name}</h3>
+                        ${category.image_url ? 
+                            `<img src="${category.image_url}" alt="${category.name}" class="w-full h-48 object-cover rounded mb-4">` 
+                            : '<div class="w-full h-48 bg-gray-200 rounded mb-4 flex items-center justify-center">Pas d\'image</div>'
+                        }
+                        <p class="text-gray-600">${category.description || 'Pas de description'}</p>
+                    </div>
+                `).join('');
+
+                updateStatus('✅ Données chargées avec succès!');
+            } catch (error) {
+                log(`❌ Detailed Error: ${error.toString()}`);
+                log(`❌ Stack: ${error.stack}`);
+                updateStatus(`Erreur: ${error.message}`, true);
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                log('🔄 Chargement des produits...');
+                log(`🌐 URL: ${API_URL}/products`);
+                log(`📤 Headers: ${JSON.stringify(fetchConfig.headers, null, 2)}`);
+                
+                const response = await fetch(`${API_URL}/products`, fetchConfig);
+                
+                log(`📥 Response Status: ${response.status} ${response.statusText}`);
+                log(`📥 Response Headers: ${JSON.stringify(Object.fromEntries([...response.headers]), null, 2)}`);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const text = await response.text();
+                log(`📥 Raw Response: ${text}`);
+                
+                const products = JSON.parse(text);
+                log(`✅ Produits reçus: ${JSON.stringify(products, null, 2)}`);
+                
+                const container = document.getElementById('products');
+                
+                if (products.length === 0) {
+                    container.innerHTML = '<p class="col-span-3 text-center text-gray-500">Aucun produit trouvé</p>';
+                    return;
+                }
+
+                container.innerHTML = products.map(product => `
+                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+                        ${product.images?.[0]?.image_url ? 
+                            `<img src="${product.images[0].image_url}" alt="${product.name}" class="w-full h-48 object-cover rounded mb-4">` 
+                            : '<div class="w-full h-48 bg-gray-200 rounded mb-4 flex items-center justify-center">Pas d\'image</div>'
+                        }
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800">${product.name}</h3>
+                            <span class="text-2xl font-bold text-orange-600">${product.price} €</span>
+                        </div>
+                        <p class="text-gray-600 mb-4">${product.description || 'Pas de description'}</p>
+                        <div class="mt-4 flex flex-col gap-2">
+                            <div class="text-sm text-gray-500">
+                                Catégorie: ${product.category_name || 'Non catégorisé'}
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-500">Stock: ${product.stock}</span>
+                                <button class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                                    Ajouter au panier
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                log(`❌ Detailed Error: ${error.toString()}`);
+                log(`❌ Stack: ${error.stack}`);
+                updateStatus(`Erreur: ${error.message}`, true);
+            }
+        }
+
+        // Charger les données au chargement de la page
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCategories();
+            loadProducts();
+        });
+    </script>
+</body>
+</html>
