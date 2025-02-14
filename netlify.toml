@@ -25,12 +25,6 @@
   ]
 
 [[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/next_server"
-  status = 200
-  force = true
-
-[[redirects]]
   from = "/_next/image"
   to = "/.netlify/images"
   status = 200
@@ -43,8 +37,8 @@
   status = 200
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/next_server"
+  from = "/*"
+  to = "/index.html"
   status = 200
 
 [[headers]]

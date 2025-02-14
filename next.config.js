@@ -2,7 +2,9 @@
 const nextConfig = {
   images: {
     domains: ['utfs.io', 'localhost'],
-    unoptimized: true
+    unoptimized: true,
+    loader: 'custom',
+    loaderFile: './src/lib/imageLoader.js'
   },
   eslint: {
     ignoreDuringBuilds: true
@@ -17,7 +19,8 @@ const nextConfig = {
   },
   experimental: {
     esmExternals: true
-  }
+  },
+  output: 'standalone'
 }
 
 module.exports = nextConfig
